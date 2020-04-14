@@ -31,7 +31,7 @@ def main():
         cfg = yaml.full_load(ymlfile)
 
     try:
-        logging.info('Waiting... Stop with CTRL+C')
+        logger.info('Waiting... Stop with CTRL+C')
 
         caqh = ComfoAirQ_Homie( 
                                 device_id=cfg['comfoairq_homie']['HOMIE_ID'], 
@@ -46,7 +46,7 @@ def main():
     except (KeyboardInterrupt,SystemExit) as ex:
         caqh.exit()
         time.sleep(0.2)
-        logging.info ("Bye")
+        logger.info ("Bye")
         pass
 
 if __name__ == "__main__":
