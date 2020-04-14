@@ -83,8 +83,7 @@ comfoairq_sensors = {
     SENSOR_FAN_SUPPLY_DUTY      : [("fan-supply-duty"      ,"Supply Fan Duty"  ,"fan_duty"  , None ,(),),],
     SENSOR_FAN_EXHAUST_FLOW     : [("fan-exhaust-flow"     ,"Exhaust Fan Flow" ,"fan_flow"  , None ,(),),],
     SENSOR_FAN_SUPPLY_FLOW      : [("fan-supply-flow"      ,"Supply Fan Flow"  ,"fan_flow"  , None ,(),),],
-    SENSOR_FAN_EXHAUST_SPEED    : [("fan-exhaust-speed"    ,    "Exhaust Fan Speed","fan_speed" , None ,(),),
-                                  ("fan-exhaust-speed-raw"    ,"Exhaust Fan Speed Raw","fan_speed" , None ,(),),],
+    SENSOR_FAN_EXHAUST_SPEED    : [("fan-exhaust-speed"    ,"Exhaust Fan Speed","fan_speed" , None ,(),),],
     SENSOR_FAN_SUPPLY_SPEED     : [("fan-supply-speed"     ,"Supply Fan Speed" ,"fan_speed" , None ,(),),],
 
     SENSOR_FAN_NEXT_CHANGE                  : [("mode-end-date"                ,"Mode Change Date" ,"mode_end_date"                 , calculate_end_date ,(),),
@@ -165,9 +164,6 @@ class Device_ComfoAirQ(Device_Base):
         self.add_node (node)
 
         for comfoairq_sensor in self.sensors:
-            # logging.info(comfoairq_sensor)
-            # print(self.sensors[sensor])
-            # self.comfoconnect.register_sensor(sensor)
             self.comfoairq.register_sensor(comfoairq_sensor)
             for homie_sensor in self.sensors[comfoairq_sensor]:
                 sensor_id ,sensor_name ,sensor_type, transformation_function, function_args =  homie_sensor
@@ -316,7 +312,7 @@ class Device_ComfoAirQ(Device_Base):
         # if var == 225 or var == 16 or var == 49 or var == 70 or var == 71  or var == 66 or (var >= 81 and var <= 80):
         #     print("%s = %s" % (var, value))
         # if var == SENSOR_TEMPERATURE_SUPPLY:
-        #     logging.info("Temeperature supply : {}".format(value))
+        # logger.info("Sensor: {}  Value: {}".format(var,value))
         if var in self.sensors:
             for homie_sensor in self.sensors.get(var):
                 sensor_id ,sensor_name ,sensor_type , transformation_function, function_args  =  homie_sensor
