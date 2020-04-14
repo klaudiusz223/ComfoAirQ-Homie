@@ -1,0 +1,4 @@
+comfoairq_homie/__pycache__/*
+comfoairq_homie.yml
+comfoairq_homie/homie_device/__pycache__/*
+comfoairq_homie/comfoairq/__pycache__/*
