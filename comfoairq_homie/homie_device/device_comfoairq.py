@@ -1,5 +1,6 @@
-from pycomfoconnect.const import *
+import time
 
+from pycomfoconnect.const import *
 
 from homie.support.repeating_timer import Repeating_Timer
 from homie.device_base import Device_Base
@@ -340,7 +341,9 @@ class Device_ComfoAirQ(Device_Base):
             self.state = 'ready'
         elif self.comfoairq._stay_connected:
             self.state = 'alert'
-            self.comfoairq.connect()
+            time.sleep(60)
+            if not self.comfoairq.comfoconnect.is_connected():
+                self.comfoairq.connect()
         else:
             self.state = 'sleeping'
 
