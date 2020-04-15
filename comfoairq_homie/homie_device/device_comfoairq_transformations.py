@@ -10,7 +10,7 @@ def calculate_end_date(var,value,function_args):
         secs = 0
     else:
         secs = struct.unpack('<i', bytes.fromhex(value))[0]
-    return (datetime.datetime.now() + datetime.timedelta(0,secs)).strftime('%Y-%m-%d %H:%M:%S.0')
+    return (datetime.datetime.now() + datetime.timedelta(0,secs)).strftime('%Y-%m-%dT%H:%M:%S.0')
 
 def calculate_timer(var,value,function_args):
     if value == 'ffffffff':

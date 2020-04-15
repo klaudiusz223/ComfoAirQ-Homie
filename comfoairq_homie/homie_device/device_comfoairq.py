@@ -26,7 +26,7 @@ CURRENT_OPERATING_MODE_SENSOR_VALUES = {
      1  :       'temporary manual',
      5  :       'manual',
      6  :       'boost',
-     11 :       'vacation',
+     11 :       'scheduled away',
 }
 
 FAN_MODES = {
@@ -52,8 +52,8 @@ TEMPERATURE_PROFILES = {
 
 VENT_MODES = {
     'balance'           : CMD_VENTMODE_BALANCE     ,
-    'supply_only'       : CMD_VENTMODE_SUPPLY      ,
-    'extract_only'      : CMD_VENTMODE_EXTRACT_ONLY,
+    'supply only'       : CMD_VENTMODE_SUPPLY      ,
+    'extract only'      : CMD_VENTMODE_EXTRACT_ONLY,
 }
 
 
@@ -86,14 +86,14 @@ comfoairq_sensors = {
     SENSOR_FAN_EXHAUST_SPEED    : [("fan-exhaust-speed"    ,"Exhaust Fan Speed","fan_speed" , None ,(),),],
     SENSOR_FAN_SUPPLY_SPEED     : [("fan-supply-speed"     ,"Supply Fan Speed" ,"fan_speed" , None ,(),),],
 
-    SENSOR_FAN_NEXT_CHANGE                  : [("mode-end-date"                ,"Mode Change Date" ,"mode_end_date"                 , calculate_end_date ,(),),
-                                               ("mode-timer"                   ,"Mode Remaining Time" ,"mode_timer"                 , calculate_timer ,(),),],
+    SENSOR_FAN_NEXT_CHANGE                  : [("mode-end-date"                ,"Operating Mode Change Date" ,"mode_end_date"                 , calculate_end_date ,(),),
+                                               ("mode-timer"                   ,"Operating Mode Remaining Time" ,"mode_timer"                 , calculate_timer ,(),),],
     SENSOR_BYPASS_TIMER                     : [("bypass-end-date"              ,"Bypass Manual Mode End Date" ,"mode_end_date"      , calculate_end_date ,(),),
                                                ("bypass-timer"                 ,"Bypass Manual Mode Remaining Time" ,"mode_timer"   , calculate_timer ,(),),],
-    SENSOR_VENT_MODE_SUPPLY_ONLY_TIMER      : [("supply-only-end-date"         ,"Supply Only End Date" ,"mode_end_date"             , calculate_end_date ,(),),
-                                               ("supply-only-timer"            ,"Supply Only Remaining Time" ,"mode_timer"          , calculate_timer ,(),),],
-    SENSOR_VENT_MODE_EXTRACT_ONLY_TIMER     : [("extract-only-end-date"        ,"Extract Only End Date" ,"mode_end_date"            , calculate_end_date ,(),),
-                                               ("extract-only-timer"           ,"Extract Only Remaining Time" ,"mode_timer"         , calculate_timer ,(),),],
+    SENSOR_VENT_MODE_SUPPLY_ONLY_TIMER      : [("supply-only-end-date"         ,"Supply Only Mode End Date" ,"mode_end_date"             , calculate_end_date ,(),),
+                                               ("supply-only-timer"            ,"Supply Only Mode Remaining Time" ,"mode_timer"          , calculate_timer ,(),),],
+    SENSOR_VENT_MODE_EXTRACT_ONLY_TIMER     : [("extract-only-end-date"        ,"Extract Only Mode End Date" ,"mode_end_date"            , calculate_end_date ,(),),
+                                               ("extract-only-timer"           ,"Extract Only Mode Remaining Time" ,"mode_timer"         , calculate_timer ,(),),],
 
     SENSOR_OPERATING_MODE_BIS   : [("current-mode"        ,"Current Mode"     ,"current_mode" , transform_current_mode,   CURRENT_OPERATING_MODE_SENSOR_VALUES),],
     
@@ -201,7 +201,7 @@ class Device_ComfoAirQ(Device_Base):
         self.comfoairq_controls[SENSOR_FAN_SPEED_MODE] = self.update_fan_mode
 
 # BYPASS  MODE
-        node.add_property(Property_Enum (node,id='bypass-mode',name='Fan Mode',data_format=','.join(BYPASS_MODES.keys()),set_value = lambda value: self.set_bypass_mode(value)))
+        node.add_property(Property_Enum (node,id='bypass-mode',name='Bypass Mode',data_format=','.join(BYPASS_MODES.keys()),set_value = lambda value: self.set_bypass_mode(value)))
         self.comfoairq.register_sensor(SENSOR_BYPASS_MODE)
 
         self.comfoairq_controls[SENSOR_BYPASS_MODE] = self.update_bypass_mode
@@ -231,8 +231,8 @@ class Device_ComfoAirQ(Device_Base):
         self.comfoairq_controls[SENSOR_VENT_MODE_EXTRACT_ONLY_STATE] = self.update_vent_mode
 
 # additional for testing purposes
-        self.comfoairq.register_sensor(SENSOR_TEMPERATURE_PROFILE)
-        self.comfoairq.register_sensor(SENSOR_BYPASS_MODE)
+        # self.comfoairq.register_sensor(SENSOR_TEMPERATURE_PROFILE)
+        # self.comfoairq.register_sensor(SENSOR_BYPASS_MODE)
 #end additionals
 
 # Gateway Controls

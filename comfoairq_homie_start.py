@@ -23,6 +23,7 @@ logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 logging.basicConfig(level=logging.INFO,handlers=[file_handler,console_handler])
+# logging.basicConfig(level=logging.DEBUG,handlers=[file_handler,console_handler])
 
 
 def main():
