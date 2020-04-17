@@ -59,8 +59,8 @@ VENT_MODES = {
 
 
 OPERATING_MODES = {
-    'auto'       : CMD_MODE_AUTO     ,
-    'manual'     : CMD_MODE_MANUAL   ,
+    'auto'       : [CMD_MODE_MANUAL,CMD_MODE_AUTO],
+    'manual'     : [CMD_MODE_MANUAL]   ,
 }
 
 
@@ -113,12 +113,16 @@ comfoairq_sensors = {
     SENSOR_PREHEATER_POWER_TOTAL          : [("preheater-energy-total"        ,"Preheater Energy Total"              ,"energy"        , None,(),),],
 
     SENSOR_AVOIDED_HEATING_CURRENT        : [("avoided-heating-current-power"      ,"Avoided Heating Current Power"             ,"power_current" , None,(),),],
-    SENSOR_AVOIDED_HEATING_TOTAL_YEAR     : [("avoided-heatingenergy-ytd"          ,"Avoided Heating Energy YTD"                ,"energy"        , None,(),),],
-    SENSOR_AVOIDED_HEATING_TOTAL          : [("avoided-heatingenergy-total"        ,"Avoided Heating Energy Total"              ,"energy"        , None,(),),],
+    SENSOR_AVOIDED_HEATING_TOTAL_YEAR     : [("avoided-heating-energy-ytd"          ,"Avoided Heating Energy YTD"                ,"energy"        , None,(),),],
+    SENSOR_AVOIDED_HEATING_TOTAL          : [("avoided-heating-energy-total"        ,"Avoided Heating Energy Total"              ,"energy"        , None,(),),],
+
+    SENSOR_AVOIDED_COOLING_CURRENT        : [("avoided-cooling-current-power"       ,"Avoided Cooling Current Power"             ,"power_current" , None,(),),],
+    SENSOR_AVOIDED_COOLING_TOTAL_YEAR     : [("avoided-cooling-energy-ytd"          ,"Avoided Cooling Energy YTD"                ,"energy"        , None,(),),],
+    SENSOR_AVOIDED_COOLING_TOTAL          : [("avoided-cooling-energy-total"        ,"Avoided Cooling Energy Total"              ,"energy"        , None,(),),],
 
     SENSOR_DAYS_TO_REPLACE_FILTER         : [("filter-replace"          ,"Filter replace" ,"integer" , None ,(),),],
 
-    SENSOR_CURRENT_RMOT                   : [("current-rmot"            ,"Current RMOT"   ,"temperature" , multiply , (0.1,), ),],
+    SENSOR_CURRENT_RMOT                   : [("current-rmot"            ,"Running Mean Outdoor Temperature"   ,"temperature" , multiply , (0.1,), ),],
     SENSOR_BYPASS_STATE                   : [("bypass-state"            ,"Bypass state"   ,"humidity" , None ,(),),],
 
 }
@@ -240,6 +244,10 @@ class Device_ComfoAirQ(Device_Base):
 # additional for testing purposes
         # self.comfoairq.register_sensor(SENSOR_TEMPERATURE_PROFILE)
         # self.comfoairq.register_sensor(SENSOR_BYPASS_MODE)
+        self.comfoairq.register_sensor(210)
+        self.comfoairq.register_sensor(209)
+        self.comfoairq.register_sensor(211)
+        # SETTING_HEATING_SEASON = 210
 #end additionals
 
 # Gateway Controls
@@ -281,7 +289,8 @@ class Device_ComfoAirQ(Device_Base):
 
 
     def set_operating_mode(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(OPERATING_MODES.get(value))
+        for command in OPERATING_MODES.get(value):
+            self.comfoairq.comfoconnect.cmd_rmi_request(command)
 
     def update_operating_mode(self,var,value):
         # if var == SENSOR_OPERATING_MODE:
@@ -333,7 +342,7 @@ class Device_ComfoAirQ(Device_Base):
 
     def update_away_mode(self,var,value):
         if self.get_node('sensors').get_property('current-mode').value == CURRENT_OPERATING_MODE_SENSOR_VALUES.get(11):
-            self.get_node('controls').get_property('boost-mode').value = self.get_node('sensors').get_property('mode-timer').value
+            self.get_node('controls').get_property('away-mode').value = self.get_node('sensors').get_property('mode-timer').value
         else:
             self.get_node('controls').get_property('away-mode').value = 0
 
@@ -346,7 +355,7 @@ class Device_ComfoAirQ(Device_Base):
 
     def callback_sensor(self,var, value):
     ## Callback sensors ################################################################################################
-        # if var in [70,71,SENSOR_OPERATING_MODE,SENSOR_OPERATING_MODE_BIS]:
+        # if var in [210,209,211]:
         #     logger.info("Sensor: {}  Value: {}".format(var,value))
         if var in self.sensors:
             for homie_sensor in self.sensors.get(var):
