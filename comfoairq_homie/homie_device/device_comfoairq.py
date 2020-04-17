@@ -51,9 +51,10 @@ TEMPERATURE_PROFILES = {
 
 
 VENT_MODES = {
-    'balance'           : CMD_VENTMODE_BALANCE     ,
-    'supply only'       : CMD_VENTMODE_SUPPLY      ,
-    'extract only'      : CMD_VENTMODE_EXTRACT_ONLY,
+    'balance'           : [CMD_START_SUPPLY_FAN,CMD_START_EXHAUST_FAN],
+    'supply only'       : [CMD_TEMPORARY_STOP_EXHAUST_FAN,CMD_START_SUPPLY_FAN],
+    'extract only'      : [CMD_TEMPORARY_STOP_SUPPLY_FAN,CMD_START_EXHAUST_FAN],
+    'off'               : [CMD_TEMPORARY_STOP_SUPPLY_FAN,CMD_TEMPORARY_STOP_EXHAUST_FAN],
 }
 
 
@@ -86,14 +87,14 @@ comfoairq_sensors = {
     SENSOR_FAN_EXHAUST_SPEED    : [("fan-exhaust-speed"    ,"Exhaust Fan Speed","fan_speed" , None ,(),),],
     SENSOR_FAN_SUPPLY_SPEED     : [("fan-supply-speed"     ,"Supply Fan Speed" ,"fan_speed" , None ,(),),],
 
-    SENSOR_FAN_NEXT_CHANGE                  : [("mode-end-date"                ,"Operating Mode Change Date" ,"mode_end_date"                 , calculate_end_date ,(),),
-                                               ("mode-timer"                   ,"Operating Mode Remaining Time" ,"mode_timer"                 , calculate_timer ,(),),],
-    SENSOR_BYPASS_TIMER                     : [("bypass-end-date"              ,"Bypass Manual Mode End Date" ,"mode_end_date"      , calculate_end_date ,(),),
-                                               ("bypass-timer"                 ,"Bypass Manual Mode Remaining Time" ,"mode_timer"   , calculate_timer ,(),),],
-    SENSOR_VENT_MODE_SUPPLY_ONLY_TIMER      : [("supply-only-end-date"         ,"Supply Only Mode End Date" ,"mode_end_date"             , calculate_end_date ,(),),
-                                               ("supply-only-timer"            ,"Supply Only Mode Remaining Time" ,"mode_timer"          , calculate_timer ,(),),],
-    SENSOR_VENT_MODE_EXTRACT_ONLY_TIMER     : [("extract-only-end-date"        ,"Extract Only Mode End Date" ,"mode_end_date"            , calculate_end_date ,(),),
-                                               ("extract-only-timer"           ,"Extract Only Mode Remaining Time" ,"mode_timer"         , calculate_timer ,(),),],
+    SENSOR_FAN_NEXT_CHANGE      : [("mode-end-date"                 ,"Operating Mode Change Date" ,"mode_end_date"                 , calculate_end_date ,(),),
+                                               ("mode-timer"                    ,"Operating Mode Remaining Time" ,"mode_timer"                 , calculate_timer ,(),),],
+    SENSOR_BYPASS_TIMER         : [("bypass-end-date"               ,"Bypass Manual Mode End Date" ,"mode_end_date"      , calculate_end_date ,(),),
+                                               ("bypass-timer"                  ,"Bypass Manual Mode Remaining Time" ,"mode_timer"   , calculate_timer ,(),),],
+    SENSOR_EXHAUST_FAN_TIMER    : [("exhaust-date"                  ,"Exhaust Fan Start Date" ,"mode_end_date"             , calculate_end_date ,(),),
+                                               ("exhaust-timer"                 ,"Exhaust Fan Time to Start" ,"mode_timer"          , calculate_timer ,(),),],
+    SENSOR_SUPPLY_FAN_TIMER       : [("supply-date"                   ,"Supply Fan Start Date" ,"mode_end_date"            , calculate_end_date ,(),),
+                                               ("supply-timer"                  ,"Supply Fan Time to Start" ,"mode_timer"         , calculate_timer ,(),),],
 
     SENSOR_OPERATING_MODE_BIS   : [("current-mode"        ,"Current Mode"     ,"current_mode" , transform_current_mode,   CURRENT_OPERATING_MODE_SENSOR_VALUES),],
     
@@ -123,8 +124,8 @@ class Device_ComfoAirQ(Device_Base):
     comfoairq = None
     comfoairq_controls = {}
 
-    supply_only_mode_activated = 0
-    extract_only_mode_activated = 0
+    exhaust_fan_stopped = 0
+    supply_fan_stopped = 0
 
 
     def __init__(
@@ -196,39 +197,35 @@ class Device_ComfoAirQ(Device_Base):
 
 # FAN SPEED MODE
         node.add_property(Property_Enum (node,id='fan-mode',name='Fan Mode',data_format=','.join(FAN_MODES.keys()),set_value = lambda value: self.set_fan_mode(value)))
-        self.comfoairq.register_sensor(SENSOR_FAN_SPEED_MODE)
-
-        self.comfoairq_controls[SENSOR_FAN_SPEED_MODE] = self.update_fan_mode
+        self.add_controls_callback(SENSOR_FAN_SPEED_MODE,self.update_fan_mode)
 
 # BYPASS  MODE
         node.add_property(Property_Enum (node,id='bypass-mode',name='Bypass Mode',data_format=','.join(BYPASS_MODES.keys()),set_value = lambda value: self.set_bypass_mode(value)))
-        self.comfoairq.register_sensor(SENSOR_BYPASS_MODE)
-
-        self.comfoairq_controls[SENSOR_BYPASS_MODE] = self.update_bypass_mode
-
+        self.add_controls_callback(SENSOR_BYPASS_MODE,self.update_bypass_mode)
 
 
 # TEMPERATURE PROFILE
-
         node.add_property(Property_Enum (node,id='temperature-profile',name='Temperature Profile',data_format=','.join(TEMPERATURE_PROFILES.keys()),set_value = lambda value: self.set_temperature_profile(value)))
-        self.comfoairq.register_sensor(SENSOR_TEMPERATURE_PROFILE)
-
-        self.comfoairq_controls[SENSOR_TEMPERATURE_PROFILE] = self.update_temperature_profile
-
-
+        self.add_controls_callback(SENSOR_TEMPERATURE_PROFILE,self.update_temperature_profile)
 
 # FAN OPERATING MODE
         node.add_property(Property_Enum (node,id='operating-mode',name='Operating Mode',data_format=','.join(OPERATING_MODES.keys()),set_value = lambda value: self.set_operating_mode(value)))
-        self.comfoairq.register_sensor(SENSOR_OPERATING_MODE)
-        self.comfoairq_controls[SENSOR_OPERATING_MODE] = self.update_operating_mode
+        self.add_controls_callback(SENSOR_OPERATING_MODE,self.update_operating_mode)
 
 # VENT MODE
         node.add_property(Property_Enum (node,id='vent-mode',name='Ventilation Mode',data_format=','.join(VENT_MODES.keys()),set_value = lambda value: self.set_vent_mode(value)))
-        self.comfoairq.register_sensor(SENSOR_VENT_MODE_SUPPLY_ONLY_STATE)
-        self.comfoairq.register_sensor(SENSOR_VENT_MODE_EXTRACT_ONLY_STATE)
+        self.add_controls_callback(SENSOR_TEMPORARY_STOP_EXHAUST_FAN_STATE,self.update_vent_mode)
+        self.add_controls_callback(SENSOR_TEMPORARY_STOP_SUPPLY_FAN_STATE,self.update_vent_mode)
 
-        self.comfoairq_controls[SENSOR_VENT_MODE_SUPPLY_ONLY_STATE] = self.update_vent_mode
-        self.comfoairq_controls[SENSOR_VENT_MODE_EXTRACT_ONLY_STATE] = self.update_vent_mode
+# BOOST MODE
+        node.add_property(Property_Integer (node,id='boost-mode',name='Activate Scheduled Boost Mode',data_format='0:'+ str(0xffffffff),set_value = lambda value: self.set_boost_mode(value)))
+        self.add_controls_callback(SENSOR_OPERATING_MODE_BIS,self.update_boost_mode)
+        self.add_controls_callback(SENSOR_FAN_NEXT_CHANGE,self.update_boost_mode)
+
+# AWAY MODE
+        node.add_property(Property_Integer (node,id='away-mode',name='Activate Scheduled Away Mode',data_format='0:'+ str(0xffffffff),set_value = lambda value: self.set_away_mode(value)))
+        self.add_controls_callback(SENSOR_OPERATING_MODE_BIS,self.update_away_mode)
+        self.add_controls_callback(SENSOR_FAN_NEXT_CHANGE,self.update_away_mode)
 
 # additional for testing purposes
         # self.comfoairq.register_sensor(SENSOR_TEMPERATURE_PROFILE)
@@ -282,37 +279,55 @@ class Device_ComfoAirQ(Device_Base):
             self.get_node('controls').get_property('operating-mode').value  = OPERATING_MODES_SENSOR_VALUES[value]
 
     def set_vent_mode(self,value):
-        # print ("vent mode to set : %s" % (value))
-        self.comfoairq.comfoconnect.cmd_rmi_request(VENT_MODES.get(value))
+        # logger.info("vent mode to set : {} with command: {} ".format(value,VENT_MODES.get(value)))
+        for command in VENT_MODES.get(value):
+            self.comfoairq.comfoconnect.cmd_rmi_request(command)
 
     def update_vent_mode(self,var,value):
-        if var == SENSOR_VENT_MODE_EXTRACT_ONLY_STATE:
-            self.extract_only_mode_activated = value
-        if var == SENSOR_VENT_MODE_SUPPLY_ONLY_STATE:
-            self.supply_only_mode_activated = value
+        if var == SENSOR_TEMPORARY_STOP_SUPPLY_FAN_STATE:
+            self.supply_fan_stopped = value
+        if var == SENSOR_TEMPORARY_STOP_EXHAUST_FAN_STATE:
+            self.exhaust_fan_stopped = value
         
-        if self.supply_only_mode_activated == 0 and self.extract_only_mode_activated == 0:
+        if self.exhaust_fan_stopped == 0 and self.supply_fan_stopped == 0:
             self.get_node('controls').get_property('vent-mode').value  = list(VENT_MODES.keys())[0] # balance 
-        if self.supply_only_mode_activated == 1 and self.extract_only_mode_activated == 0:
+        if self.exhaust_fan_stopped == 1 and self.supply_fan_stopped == 0:
             self.get_node('controls').get_property('vent-mode').value  = list(VENT_MODES.keys())[1] # supply only
-        if self.supply_only_mode_activated == 0 and self.extract_only_mode_activated == 1:
+        if self.exhaust_fan_stopped == 0 and self.supply_fan_stopped == 1:
             self.get_node('controls').get_property('vent-mode').value  = list(VENT_MODES.keys())[2] # extract only
-
-    def set_gateway_connect(self,value):
-        self.comfoairq.event.set()
-        if value == 'ON':
-            self.comfoairq._stay_connected = True
-        elif value == 'OFF':
-            self.comfoairq._stay_connected = False
+        if self.exhaust_fan_stopped == 1 and self.supply_fan_stopped == 1:
+            self.get_node('controls').get_property('vent-mode').value  = list(VENT_MODES.keys())[3] # extract only
 
 
+    def set_boost_mode(self,value):
+        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x01\x06\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x03')
+
+    def update_boost_mode(self,var,value):
+        if self.get_node('sensors').get_property('current-mode').value == CURRENT_OPERATING_MODE_SENSOR_VALUES.get(6):
+            self.get_node('controls').get_property('boost-mode').value = self.get_node('sensors').get_property('mode-timer').value
+        else:
+            self.get_node('controls').get_property('boost-mode').value = 0
+
+    def set_away_mode(self,value):
+        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x01\x0b\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x00')                                                      
+
+    def update_away_mode(self,var,value):
+        if self.get_node('sensors').get_property('current-mode').value == CURRENT_OPERATING_MODE_SENSOR_VALUES.get(11):
+            self.get_node('controls').get_property('boost-mode').value = self.get_node('sensors').get_property('mode-timer').value
+        else:
+            self.get_node('controls').get_property('away-mode').value = 0
+
+    def add_controls_callback(self,sensor,callback):
+        self.comfoairq.register_sensor(sensor)
+        if sensor not in self.comfoairq_controls:
+            self.comfoairq_controls[sensor] = [callback]
+        else:
+            self.comfoairq_controls[sensor].append(callback)
 
     def callback_sensor(self,var, value):
     ## Callback sensors ################################################################################################
-        # if var == 225 or var == 16 or var == 49 or var == 70 or var == 71  or var == 66 or (var >= 81 and var <= 80):
-        #     print("%s = %s" % (var, value))
-        # if var == SENSOR_TEMPERATURE_SUPPLY:
-        # logger.info("Sensor: {}  Value: {}".format(var,value))
+        # if var in [70,71,SENSOR_OPERATING_MODE,SENSOR_OPERATING_MODE_BIS]:
+        #     logger.info("Sensor: {}  Value: {}".format(var,value))
         if var in self.sensors:
             for homie_sensor in self.sensors.get(var):
                 sensor_id ,sensor_name ,sensor_type , transformation_function, function_args  =  homie_sensor
@@ -323,7 +338,8 @@ class Device_ComfoAirQ(Device_Base):
                     self.get_node('sensors').get_property(sensor_id).value  = transformation_function(var,value,function_args)
 
         if var in self.comfoairq_controls:
-            self.comfoairq_controls[var](var,value)
+            for callback in self.comfoairq_controls[var]:
+                callback(var,value)
 
 
     def publish_connection_status(self):

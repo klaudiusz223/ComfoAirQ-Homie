@@ -1,6 +1,10 @@
 import datetime
 import struct
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def multiply(var,value,function_args):
     return round(value * function_args[0],1)
 
