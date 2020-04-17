@@ -29,6 +29,17 @@ CURRENT_OPERATING_MODE_SENSOR_VALUES = {
      11 :       'scheduled away',
 }
 
+SWITCH_VALUES = {
+    0  :       'OFF',
+    1  :       'ON',
+}
+
+SEASONS_VALUES = {
+    0  :       'ACTIVATED',
+    1  :       'NOT ACTIVATED',
+}
+
+
 FAN_MODES = {
     'away'  : CMD_FAN_MODE_AWAY     ,
     '1'     : CMD_FAN_MODE_LOW      ,
@@ -75,7 +86,7 @@ OPERATING_MODES_SENSOR_VALUES = {
 }
 
 comfoairq_sensors = {
-#   comfoconnect sensor         : [(    sensor_id         ,     sensor_type        ,     transformation_function, function_args), ]
+#   comfoconnect sensor         : [(    sensor_id         ,     sensor_type        ,     transformation_function, z9function_args)), ]
     SENSOR_TEMPERATURE_OUTDOOR  : [("temperature-outdoor",    "Temperature Outdoor",  "temperature" , multiply , (0.1,), ),],
     SENSOR_TEMPERATURE_SUPPLY   : [("temperature-supply" ,    "Temperature Supply",   "temperature" , multiply , (0.1,), ),],
     SENSOR_TEMPERATURE_EXTRACT  : [("temperature-extract",    "Temperature Extract",  "temperature" , multiply , (0.1,), ),],
@@ -94,15 +105,15 @@ comfoairq_sensors = {
     SENSOR_FAN_SUPPLY_SPEED     : [("fan-supply-speed"     ,"Supply Fan Speed" ,"fan_speed" , None ,(),),],
 
     SENSOR_FAN_NEXT_CHANGE      : [("mode-end-date"                 ,"Operating Mode Change Date" ,"mode_end_date"                 , calculate_end_date ,(),),
-                                               ("mode-timer"                    ,"Operating Mode Remaining Time" ,"mode_timer"                 , calculate_timer ,(),),],
+                                   ("mode-timer"                    ,"Operating Mode Remaining Time" ,"mode_timer"                 , calculate_timer ,(),),],
     SENSOR_BYPASS_TIMER         : [("bypass-end-date"               ,"Bypass Manual Mode End Date" ,"mode_end_date"      , calculate_end_date ,(),),
-                                               ("bypass-timer"                  ,"Bypass Manual Mode Remaining Time" ,"mode_timer"   , calculate_timer ,(),),],
+                                   ("bypass-timer"                  ,"Bypass Manual Mode Remaining Time" ,"mode_timer"   , calculate_timer ,(),),],
     SENSOR_EXHAUST_FAN_TIMER    : [("exhaust-date"                  ,"Exhaust Fan Start Date" ,"mode_end_date"             , calculate_end_date ,(),),
-                                               ("exhaust-timer"                 ,"Exhaust Fan Time to Start" ,"mode_timer"          , calculate_timer ,(),),],
-    SENSOR_SUPPLY_FAN_TIMER       : [("supply-date"                   ,"Supply Fan Start Date" ,"mode_end_date"            , calculate_end_date ,(),),
-                                               ("supply-timer"                  ,"Supply Fan Time to Start" ,"mode_timer"         , calculate_timer ,(),),],
+                                   ("exhaust-timer"                 ,"Exhaust Fan Time to Start" ,"mode_timer"          , calculate_timer ,(),),],
+    SENSOR_SUPPLY_FAN_TIMER     : [("supply-date"                   ,"Supply Fan Start Date" ,"mode_end_date"            , calculate_end_date ,(),),
+                                   ("supply-timer"                  ,"Supply Fan Time to Start" ,"mode_timer"         , calculate_timer ,(),),],
 
-    SENSOR_OPERATING_MODE_BIS   : [("current-mode"        ,"Current Mode"     ,"current_mode" , transform_current_mode,   CURRENT_OPERATING_MODE_SENSOR_VALUES),],
+    SENSOR_OPERATING_MODE_BIS   : [("current-mode"        ,"Current Mode"     ,"enum" , transform_dict,   CURRENT_OPERATING_MODE_SENSOR_VALUES),],
     
     SENSOR_POWER_CURRENT        : [("current-power"       ,"Current Power"             ,"power_current" , None,(),),],
     SENSOR_POWER_TOTAL_YEAR     : [("energy-ytd"          ,"Energy YTD"                ,"energy"        , None,(),),],
@@ -125,6 +136,7 @@ comfoairq_sensors = {
     SENSOR_CURRENT_RMOT                   : [("current-rmot"            ,"Running Mean Outdoor Temperature"   ,"temperature" , multiply , (0.1,), ),],
     SENSOR_BYPASS_STATE                   : [("bypass-state"            ,"Bypass state"   ,"humidity" , None ,(),),],
 
+    SENSOR_HEATING_SEASON                 : [("heating-season"          ,"Heating Season" ,"enum" , transform_dict ,SEASONS_VALUES,),],
 }
 
 repeating_timer = None
@@ -192,8 +204,8 @@ class Device_ComfoAirQ(Device_Base):
                     node.add_property (Property_DateTime (node,id=sensor_id,name = sensor_name,settable = False,data_format='%Y-%m-%d %H:%M:%S.%f'))
                 elif sensor_type == 'mode_timer':
                     node.add_property (Property_Integer (node,id=sensor_id,name = sensor_name,settable = False,unit='s'))
-                elif sensor_type == 'current_mode':
-                    node.add_property (Property_Enum (node,id=sensor_id,name = sensor_name,settable = False,data_format=','.join(CURRENT_OPERATING_MODE_SENSOR_VALUES.values())))
+                elif sensor_type == 'enum':
+                    node.add_property (Property_Enum (node,id=sensor_id,name = sensor_name,settable = False,data_format=','.join(function_args.values())))
                 elif sensor_type == 'power_current':
                     node.add_property (Property_Float (node,id=sensor_id,name = sensor_name,settable = False,unit='W'))
                 elif sensor_type == 'energy':

@@ -24,5 +24,5 @@ def calculate_timer(var,value,function_args):
     return secs
 
 
-def transform_current_mode(var,value,function_args):
+def transform_dict(var,value,function_args):
     return function_args[value]
