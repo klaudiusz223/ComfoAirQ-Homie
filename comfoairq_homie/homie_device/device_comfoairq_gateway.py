@@ -19,6 +19,7 @@ class Device_ComfoAirQ_Gateway(Device_Base):
                 homie_settings=None, 
                 mqtt_settings=None,
                 device_comfoairq=None,
+                connect_at_start=True,
 
     ):
         assert device_id
@@ -26,7 +27,6 @@ class Device_ComfoAirQ_Gateway(Device_Base):
         assert device_comfoairq
         assert mqtt_settings
         super().__init__ (device_id, name, homie_settings, mqtt_settings)
-
 
         self.device_comfoairq=device_comfoairq
 # Gateway Controls
@@ -52,8 +52,10 @@ class Device_ComfoAirQ_Gateway(Device_Base):
         repeating_timer.add_callback(self.publish_connection_status)
 
         self.start()
-        self.publish_connection_status()
+        if connect_at_start:
+            self.set_stay_connected("ON")
 
+        self.publish_connection_status()
 
     def set_stay_connected(self,value):
         if self.device_comfoairq:
@@ -75,6 +77,11 @@ class Device_ComfoAirQ_Gateway(Device_Base):
             self.get_node('sensors').get_property('state').value = 'PROBLEM'
         else:
             self.get_node('sensors').get_property('state').value = 'SLEEPING'
+
+        if self.device_comfoairq.comfoairq._stay_connected:
+            self.get_node('controls').get_property('stayconnected').value = 'ON'
+        else:
+            self.get_node('controls').get_property('stayconnected').value = 'OFF'
 
     def exit(self):
         self.state = 'disconnected'

@@ -31,6 +31,7 @@ class ComfoAirQ_Homie(object):
 
         self.device_gateway = Device_ComfoAirQ_Gateway(device_id=self.device_id + "gateway",name=self.name + "Gateway",
                                                         homie_settings=homie_settings,mqtt_settings=self.mqtt_settings,
+                                                        connect_at_start = comfoconnect_settings['COMFOCONNECT_AUTOCONNECT'],
                                                         device_comfoairq=
                                                         Device_ComfoAirQ(device_id=self.device_id, name=self.name,
                                                                         homie_settings=homie_settings,mqtt_settings=self.mqtt_settings,

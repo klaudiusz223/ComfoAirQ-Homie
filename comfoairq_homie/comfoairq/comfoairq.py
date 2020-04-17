@@ -118,9 +118,6 @@ class ComfoAirQ(object):
                 self._comfoconnect_thread = threading.Thread(target=self._comfoconnect_thread_loop,name="ComfoAirQThread")
                 self._comfoconnect_thread.start()
 
-                if self.comfoconnect_settings['COMFOCONNECT_AUTOCONNECT']:
-                    self._stay_connected = True
-                    self.connection_event.set()
                 break
         # time.sleep(60)
 
