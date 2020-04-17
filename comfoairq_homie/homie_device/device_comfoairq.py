@@ -63,6 +63,12 @@ OPERATING_MODES = {
     'manual'     : CMD_MODE_MANUAL   ,
 }
 
+
+MANUAL_MODE = {
+    'OFF'    : CMD_MODE_AUTO     ,
+    'ON'     : CMD_MODE_MANUAL   ,
+}
+
 OPERATING_MODES_SENSOR_VALUES = {
     -1  :       'auto'  ,
      1  :       'manual',
@@ -208,9 +214,13 @@ class Device_ComfoAirQ(Device_Base):
         node.add_property(Property_Enum (node,id='temperature-profile',name='Temperature Profile',data_format=','.join(TEMPERATURE_PROFILES.keys()),set_value = lambda value: self.set_temperature_profile(value)))
         self.add_controls_callback(SENSOR_TEMPERATURE_PROFILE,self.update_temperature_profile)
 
-# FAN OPERATING MODE
+# OPERATING MODE
         node.add_property(Property_Enum (node,id='operating-mode',name='Operating Mode',data_format=','.join(OPERATING_MODES.keys()),set_value = lambda value: self.set_operating_mode(value)))
         self.add_controls_callback(SENSOR_OPERATING_MODE,self.update_operating_mode)
+
+# Manual MODE
+        node.add_property(Property_Switch (node,id='manual-mode',name='Manual Mode',set_value = lambda value: self.set_manual_mode(value)))
+        self.add_controls_callback(SENSOR_OPERATING_MODE,self.update_manual_mode)
 
 # VENT MODE
         node.add_property(Property_Enum (node,id='vent-mode',name='Ventilation Mode',data_format=','.join(VENT_MODES.keys()),set_value = lambda value: self.set_vent_mode(value)))
@@ -271,12 +281,22 @@ class Device_ComfoAirQ(Device_Base):
 
 
     def set_operating_mode(self,value):
-        # print ("Setting operating mode: %s" % (value))
         self.comfoairq.comfoconnect.cmd_rmi_request(OPERATING_MODES.get(value))
 
     def update_operating_mode(self,var,value):
-        if var == SENSOR_OPERATING_MODE:
-            self.get_node('controls').get_property('operating-mode').value  = OPERATING_MODES_SENSOR_VALUES[value]
+        # if var == SENSOR_OPERATING_MODE:
+        self.get_node('controls').get_property('operating-mode').value  = OPERATING_MODES_SENSOR_VALUES[value]
+
+    def set_manual_mode(self,value):
+        logger.info("Setting manual mode: %s" % (value))
+        self.comfoairq.comfoconnect.cmd_rmi_request(MANUAL_MODE.get(value))
+
+    def update_manual_mode(self,var,value):
+        # if var == SENSOR_OPERATING_MODE:
+        if value == 1:            
+             self.get_node('controls').get_property('manual-mode').value  = 'ON'
+        else:
+             self.get_node('controls').get_property('manual-mode').value  = 'OFF'
 
     def set_vent_mode(self,value):
         # logger.info("vent mode to set : {} with command: {} ".format(value,VENT_MODES.get(value)))
