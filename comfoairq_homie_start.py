@@ -2,6 +2,7 @@ import yaml
 import time
 import os
 import sys
+import argparse
 
 from comfoairq_homie.comfoairq_homie import ComfoAirQ_Homie
 
@@ -28,7 +29,12 @@ logging.basicConfig(level=logging.INFO,handlers=[file_handler,console_handler])
 
 def main():
 
-    with open("comfoairq_homie.yml", 'r') as ymlfile:
+    parser = argparse.ArgumentParser() 
+    parser.add_argument("-c", "--config", help = "Config File. Default: comfoairq_homie.yml ", default="comfoairq_homie.yml") 
+  
+    args = parser.parse_args() 
+  
+    with open(args.config, 'r') as ymlfile:
         cfg = yaml.full_load(ymlfile)
 
     try:
