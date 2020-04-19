@@ -1,4 +1,6 @@
 import time
+import sys
+import os
 
 from pycomfoconnect.const import *
 
@@ -14,8 +16,8 @@ from homie.node.property.property_integer import Property_Integer
 from homie.node.property.property_enum import Property_Enum
 
 from .device_comfoairq_transformations import *
-from comfoairq_homie.comfoairq.comfoairq_const import *
-from comfoairq_homie.comfoairq.comfoairq import ComfoAirQ
+from ..comfoairq.comfoairq_const import *
+from ..comfoairq.comfoairq import ComfoAirQ
 
 import logging
 

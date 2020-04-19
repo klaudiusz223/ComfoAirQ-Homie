@@ -4,7 +4,7 @@ import os
 import sys
 import argparse
 
-from comfoairq_homie.comfoairq_homie import ComfoAirQ_Homie
+from .comfoairq_homie import ComfoAirQ_Homie
 
 import logging
 from logging.handlers import TimedRotatingFileHandler

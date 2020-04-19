@@ -26,5 +26,10 @@ setuptools.setup(
     dependency_links=[
         # 'git+https://github.com/klaudiusz223/comfoconnect.git@patch-3#egg=pycomfoconnect-0.3.0'
     ],
+    entry_points={
+        'console_scripts': [
+            'comfoairq-homie = comfoairq_homie.__main__:main'
+        ]
+    },
     python_requires='>=3.6',
 )
