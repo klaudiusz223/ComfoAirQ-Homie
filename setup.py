@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="comfoairq-homie-klaudiusz223", # Replace with your own username
+    name="comfoairq-homie", 
     version="0.1.0",
     author="Klaudiusz",
     author_email="klaudiusz223@users.noreply.github.com",
