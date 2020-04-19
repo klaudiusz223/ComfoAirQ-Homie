@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="comfoairq-homie", 
-    version="0.1.0",
+    version="0.1.1",
     author="Klaudiusz",
     author_email="klaudiusz223@users.noreply.github.com",
     description="Homie4 for Zehnder ComfoAirQ",
