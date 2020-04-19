@@ -1,0 +1,14 @@
+[Unit]
+Description="Homie4 ComfoAirQ Service"
+After=syslog.target network.target mosquitto.service openhab2.service
+
+
+[Service]
+WorkingDirectory=/opt/comfoairq/
+VIRTUAL_ENV=/opt/comfoairq/virtualenv
+Environment=PATH=$VIRTUAL_ENV/bin:$PATH
+ExecStart=/opt/comfoairq/virtualenv/bin/comfoairq-homie -c /opt/comfoairq/config/comfoairq_homie.yml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
