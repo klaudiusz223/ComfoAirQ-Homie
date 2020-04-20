@@ -15,7 +15,7 @@ from homie.node.property.property_datetime import Property_DateTime
 from homie.node.property.property_integer import Property_Integer
 from homie.node.property.property_enum import Property_Enum
 
-from .device_comfoairq_transformations import *
+from .comfoairq_transformations import *
 from ..comfoairq.comfoairq_const import *
 from ..comfoairq.comfoairq import ComfoAirQ
 
@@ -258,9 +258,9 @@ class Device_ComfoAirQ(Device_Base):
 # additional for testing purposes
         # self.comfoairq.register_sensor(SENSOR_TEMPERATURE_PROFILE)
         # self.comfoairq.register_sensor(SENSOR_BYPASS_MODE)
-        self.comfoairq.register_sensor(210)
-        self.comfoairq.register_sensor(209)
-        self.comfoairq.register_sensor(211)
+        # self.comfoairq.register_sensor(210)
+        # self.comfoairq.register_sensor(209)
+        # self.comfoairq.register_sensor(211)
         # SETTING_HEATING_SEASON = 210
 #end additionals
 
