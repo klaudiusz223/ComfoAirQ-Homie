@@ -63,7 +63,7 @@ def main():
             time.sleep(10)
 
     except (KeyboardInterrupt,SystemExit) as ex:
-        if caph is not None:
+        if caqh is not None:
             caqh.exit()
         time.sleep(0.2)
         logger.info ("Bye")
