@@ -5,7 +5,7 @@ mqtt:
   MQTT_PASSWORD: null
   MQTT_KEEPALIVE: 60
   MQTT_CLIENT_ID: null
-  MQTT_SHARE_CLIENT: True
+  MQTT_SHARE_CLIENT: False
 
 comfoconnect:
   COMFOCONNECT_HOST : null
