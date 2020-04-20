@@ -5,9 +5,10 @@ After=syslog.target network.target mosquitto.service openhab2.service
 
 [Service]
 WorkingDirectory=/opt/comfoairq/
-VIRTUAL_ENV=/opt/comfoairq/virtualenv
-Environment=PATH=$VIRTUAL_ENV/bin:$PATH
-ExecStart=/opt/comfoairq/virtualenv/bin/comfoairq-homie -c /opt/comfoairq/config/comfoairq_homie.yml
+Environment=COMFOAIRQ_LOGLEVEL=INFO
+Environment=COMFOAIRQ_COMFOCONNECT_LOGLEVEL=INFO
+Environment=PATH=/opt/comfoairq/virtualenv/bin:$PATH
+ExecStart=/opt/comfoairq/virtualenv/bin/comfoairq-homie -c /opt/comfoairq/config/comfoairq_homie.yml -l /opt/comfoairq/log/comfoairq_homie.log
 Restart=always
 
 [Install]

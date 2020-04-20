@@ -2,37 +2,49 @@ import yaml
 import time
 import os
 import sys
+import signal
 import argparse
-
-from .comfoairq_homie import ComfoAirQ_Homie
-
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-logger = logging.getLogger(__name__)
 
-FORMATTER = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-LOG_FILE = os.path.expanduser("~") + "/comfoairqhomie.log"
+from .comfoairq_homie import ComfoAirQ_Homie
 
-console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setFormatter(FORMATTER)
-
-file_handler = TimedRotatingFileHandler(LOG_FILE, when="midnight")
-file_handler.setFormatter(FORMATTER)
-
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
-logging.basicConfig(level=logging.INFO,handlers=[file_handler,console_handler])
-# logging.basicConfig(level=logging.DEBUG,handlers=[file_handler,console_handler])
-
+def handle_exit(sig, frame):
+    raise(SystemExit)
 
 def main():
-
     parser = argparse.ArgumentParser() 
-    parser.add_argument("-c", "--config", help = "Config File. Default: comfoairq_homie.yml ", default="comfoairq_homie.yml") 
+    parser.add_argument("-c", "--config", help = "config file. Default: comfoairq_homie.yml ", default="./comfoairq_homie.yml") 
+    parser.add_argument("-l", "--logfile", help = "optional log file" ) 
   
     args = parser.parse_args() 
+
+    signal.signal(signal.SIGTERM, handle_exit)
+
+    logger = logging.getLogger(__name__)
+    
+    FORMATTER = logging.Formatter("%(asctime)s - [%(name)s]  [%(levelname)s]  %(message)s")    
+    LOGLEVEL = os.environ.get('COMFOAIRQ_LOGLEVEL','INFO').upper()
+    LOGLEVEL_COMFOCONNECT = os.environ.get('COMFOAIRQ_COMFOCONNECT_LOGLEVEL', LOGLEVEL).upper()
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(FORMATTER)
+    logger.addHandler(console_handler)
+
+    logging.getLogger('bridge').setLevel(LOGLEVEL_COMFOCONNECT)
+    logging.getLogger('pycomfoconnect').setLevel(LOGLEVEL_COMFOCONNECT)
+
+
+    if args.logfile is not None:
+        # LOG_FILE = os.path.expanduser("~") + "/comfoairqhomie.log"
+        file_handler = TimedRotatingFileHandler(args.logfile, when="midnight")
+        file_handler.setFormatter(FORMATTER)
+        logger.addHandler(file_handler)
+        logging.basicConfig(level=LOGLEVEL,handlers=[file_handler,console_handler])
+    else: 
+        logging.basicConfig(level=LOGLEVEL,handlers=[console_handler])
+
   
     with open(args.config, 'r') as ymlfile:
         cfg = yaml.full_load(ymlfile)
@@ -51,7 +63,8 @@ def main():
             time.sleep(10)
 
     except (KeyboardInterrupt,SystemExit) as ex:
-        caqh.exit()
+        if caph is not None:
+            caqh.exit()
         time.sleep(0.2)
         logger.info ("Bye")
         pass

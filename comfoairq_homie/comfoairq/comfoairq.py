@@ -1,5 +1,9 @@
 import time
+import logging
+
 from pycomfoconnect import *
+
+logger = logging.getLogger(__name__)
 
 class ComfoAirQ(object):
 
@@ -50,10 +54,10 @@ class ComfoAirQ(object):
         # bridge = Bridge(args.ip, bytes.fromhex('0000000000251010800170b3d54264b4'))
 
         if bridge is None:
-            print("No bridges found!")
+            logger.warning("No bridges found!")
             return None
 
-        print("Bridge found: %s (%s)" % (bridge.uuid.hex(), bridge.host))
+        logger.info("Bridge found: %s (%s)" % (bridge.uuid.hex(), bridge.host))
 
         bridge.debug = False
 
