@@ -1,0 +1,30 @@
+import org.eclipse.smarthome.model.script.ScriptServiceUtil;
+
+rule "gEQ_Ventilation_Mode_End_Date_String update end date"
+when
+    Member of gEQ_Ventilation_Mode_End_Date_String changed
+then
+    
+    val originalSensor  =  triggeringItem
+    val sensorName      =  originalSensor.name.substring(0, originalSensor.name.lastIndexOf('_String'));
+    
+    val DateTimeItem sensor = ScriptServiceUtil.getItemRegistry?.getItem(sensorName) as DateTimeItem;
+
+    if ( originalSensor.state != UNDEF ) 
+    {
+
+        val DateTimeType modeChangeDate = DateTimeType.valueOf(originalSensor.state.toString) 
+
+        if(now.isBefore(modeChangeDate.zonedDateTime.toInstant.toEpochMilli))
+        {
+            sensor.postUpdate(modeChangeDate)
+        } else 
+        {
+            sensor.postUpdate(UNDEF)
+        }
+    } else 
+    {
+        sensor.postUpdate(UNDEF)
+    }
+
+    end

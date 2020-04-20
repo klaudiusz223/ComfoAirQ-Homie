@@ -1,0 +1,7 @@
+Bridge  mqtt:broker:local [ host="localhost", port="1883", secure=false, username="openhab", password="pass", clientID="OpenHABServer",qos=1 ]
+{
+}
+
+Thing mqtt:homie300:local:zehnderq450 (mqtt:broker:local) @ "Zehnder" [deviceid="zehnderq450", removetopics=false ,basetopic="homie"]
+Thing mqtt:homie300:local:zehnderq450gateway (mqtt:broker:local) @ "Zehnder" [deviceid="zehnderq450gateway", removetopics=false ,basetopic="homie"]
+

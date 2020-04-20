@@ -1,0 +1,78 @@
+//Gateway Controll
+Switch      EQ_Ventilation_Gateway_Stay_Connected               "Stay connected to Comfoconnect"  (EQ_Ventilation,gRestorePersistence) {channel="mqtt:homie300:local:zehnderq450gateway:controls#stayconnected"}
+//Gateway sensor
+String      EQ_Ventilation_Gateway_Connection_State             "Connection state"  (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450gateway:sensors#state"}
+
+// Zehnder controlls
+
+String EQ_Ventilation_Current_Mode      "Current Mode [%s]"     <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#current_2Dmode"}
+
+Number:Temperature      EQ_Ventilation_Supply_Temperature       "Temperature Supply   [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dsupply"   ,expire="10m"}
+Number:Temperature      EQ_Ventilation_Extract_Temperature      "Temperature Extract  [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dextract"  ,expire="10m"}
+Number:Temperature      EQ_Ventilation_Outdoor_Temperature      "Temperature Outdoor  [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Doutdoor"  ,expire="10m"}
+Number:Temperature      EQ_Ventilation_Exhaust_Temperature      "Temperature Exhaust  [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dexhaust"  ,expire="10m"}
+
+Number:Dimensionless      EQ_Ventilation_Supply_Humidity       "Humidity Supply   [%d %%]" <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dsupply"   ,expire="10m"}
+Number:Dimensionless      EQ_Ventilation_Extract_Humidity      "Humidity Extract  [%d %%]" <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dextract"  ,expire="10m"}
+Number:Dimensionless      EQ_Ventilation_Outdoor_Humidity      "Humidity Outdoor  [%d %%]" <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Doutdoor"  ,expire="10m"}
+Number:Dimensionless      EQ_Ventilation_Exhaust_Humidity      "Humidity Exhaust  [%d %%]" <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dexhaust"  ,expire="10m"}
+
+Number:Dimensionless      EQ_Ventilation_Supply_Speed           "Supply Fan Speed [%d rpm]" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dsupply_2Dspeed"  ,expire="10m"}
+Number:Dimensionless      EQ_Ventilation_Exhaust_Speed          "Exhaust Fan Speed [%d rpm]" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dexhaust_2Dspeed"  ,expire="10m"}
+
+Number                    EQ_Ventilation_Supply_Flow            "Supply Fan Flow [%d m³/h]" <flow> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dsupply_2Dflow"  ,expire="10m"}
+Number                    EQ_Ventilation_Exhaust_Flow           "Exhaust Fan Flow [%d m³/h]" <flow> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dexhaust_2Dflow"  ,expire="10m"}
+
+Number:Dimensionless      EQ_Ventilation_Supply_Duty            "Supply Fan Duty [%d %%]"  <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dsupply_2Dduty"  ,expire="10m"}
+Number:Dimensionless      EQ_Ventilation_Exhaust_Duty           "Exhaust Fan Duty [%d %%]" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dexhaust_2Dduty"  ,expire="10m"}
+
+Number:Time               EQ_Ventilation_Filter_Replace_Remaining_Time        "Filter Remaining Time [%d d]"              <time> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#filter_2Dreplace"      ,expire="24h"}
+Number:Dimensionless      EQ_Ventilation_Bypass_State           "Bypass State [%d %%]"                      <humidity>  (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#bypass_2Dstate"  ,expire="10m"}
+
+
+DateTime    EQ_Ventilation_Operation_Mode_End_Date              "Operation Mode Mode Change Date [%1$tF %1$tR]"     <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date) 
+DateTime    EQ_Ventilation_Supply_Fan_Start_Date                "Supply Fan Start Date [%1$tF %1$tR]"               <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date)
+DateTime    EQ_Ventilation_Exhaust_Fan_Start_Date               "Exhaust Fan Start Date [%1$tF %1$tR]"              <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date)
+DateTime    EQ_Ventilation_Bypass_Manual_Mode_End_Date          "Bypass Manual Mode End Date [%1$tF %1$tR]"         <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date)
+
+Number:Time EQ_Ventilation_Operation_Mode_Remaining_Time        "Operation Mode Remaining Time [%d s]"              <time> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#mode_2Dtimer"  ,expire="10m"}
+Number:Time EQ_Ventilation_Supply_Fan_Start_Time                "Supply Fan Time to Start [%d s]"                   <time> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#supply_2Dtimer"  ,expire="10m"}
+Number:Time EQ_Ventilation_Exhaust_Fan_Start                    "Exhaust Fan Time to Start [%d s]"                  <time> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#exhaust_2Dtimer"  ,expire="10m"}
+Number:Time EQ_Ventilation_Bypass_Manual_Mode_Remaining_Time    "Bypass Manual Mode Remaining Time [%d s]"          <time> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#bypass_2Dtimer"  ,expire="10m"}
+
+String      EQ_Ventilation_Operation_Mode_End_Date_String       "Operation Mode Mode Change Date (String) [%s]"     <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date_String) {channel="mqtt:homie300:local:zehnderq450:sensors#mode_2Dend_2Ddate"  ,expire="10m"}
+String      EQ_Ventilation_Supply_Fan_Start_Date_String         "Supply Fan Start Date (String) [%s]"               <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date_String) {channel="mqtt:homie300:local:zehnderq450:sensors#supply_2Ddate"  ,expire="10m"}
+String      EQ_Ventilation_Exhaust_Fan_Start_Date_String        "Exhaust Fan Start Date (String) [%s]"              <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date_String) {channel="mqtt:homie300:local:zehnderq450:sensors#exhaust_2Ddate"  ,expire="10m"}
+String      EQ_Ventilation_Bypass_Manual_Mode_End_Date_String   "Bypass Manual Mode End Date (String) [%s]"         <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date_String) {channel="mqtt:homie300:local:zehnderq450:sensors#bypass_2Dend_2Ddate"  ,expire="10m"}
+
+
+Number:Power EQ_Ventilation_Current_Power                       "Current Power [%d W]"                              <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#current_2Dpower"  ,expire="10m"}
+Number:Power EQ_Ventilation_Energy_YTD                          "Energy YTD [%d kWh]"                               <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#energy_2Dytd"     ,expire="1h"}
+Number:Power EQ_Ventilation_Energy_Total                        "Energy Total [%d kWh]"                             <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#energy_2Dtotal"   ,expire="1h"}
+
+Number:Power EQ_Ventilation_Preheater_Current_Power             "Preheater Current Power [%d W]"                    <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#preheater_2Dcurrent_2Dpower"  ,expire="10m"}
+Number:Power EQ_Ventilation_Preheater_Energy_YTD                "Preheater Energy YTD [%d kWh]"                     <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#preheater_2Denergy_2Dytd"     ,expire="1h"}
+Number:Power EQ_Ventilation_Preheater_Energy_Total              "Preheater Energy Total [%d kWh]"                   <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#preheater_2Denergy_2Dtotal"   ,expire="1h"}
+
+Number:Power EQ_Ventilation_Avoided_Heating_Current_Power       "Avoided Heating Current Power [%d W]"              <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#avoided_2Dheating_2Dcurrent_2Dpower"  ,expire="10m"}
+Number:Power EQ_Ventilation_Avoided_Heating_Energy_YTD          "Avoided Heating Energy YTD [%d kWh]"               <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#avoided_2Dheating_2Denergy_2Dytd"     ,expire="1h"}
+Number:Power EQ_Ventilation_Avoided_Heating_Energy_Total        "Avoided Heating Energy Total [%d kWh]"             <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#avoided_2Dheating_2Denergy_2Dtotal"   ,expire="1h"}
+
+Number:Power EQ_Ventilation_Avoided_Cooling_Current_Power       "Avoided Cooling Current Power [%d W]"              <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#avoided_2Dcooling_2Dcurrent_2Dpower"  ,expire="10m"}
+Number:Power EQ_Ventilation_Avoided_Cooling_Energy_YTD          "Avoided Cooling Energy YTD [%d kWh]"               <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#avoided_2Dcooling_2Denergy_2Dytd"     ,expire="1h"}
+Number:Power EQ_Ventilation_Avoided_Cooling_Energy_Total        "Avoided Cooling Energy Total [%d kWh]"             <energy> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#avoided_2Dcooling_2Denergy_2Dtotal"   ,expire="1h"}
+
+Number:Temperature  EQ_Ventilation_Current_RMOT                 "Running Mean Outdoor Temperature [%.1f °C]"       <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#current_2Drmot"  ,expire="1h"}
+String              EQ_Ventilation_Heating_Season               "Heating Season [%s]"                              <radiator>     (EQ_Ventilation)  {channel="mqtt:homie300:local:zehnderq450:sensors#heating_2Dseason"}
+
+// Zehnder Controls
+
+String EQ_Ventilation_Operating_Mode        "Operating Mode"           <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#operating_2Dmode"}
+Switch EQ_Ventilation_Manual_Mode           "Manual Mode"              <switch>      (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#manual_2Dmode"}
+String EQ_Ventilation_Fan_Mode              "Fan Mode"                 <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#fan_2Dmode"}
+String EQ_Ventilation_Bypass_Mode           "Bypass Mode"              <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#bypass_2Dmode"}
+String EQ_Ventilation_Balance_Mode          "Ventilation Mode"         <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#vent_2Dmode"}
+String EQ_Ventilation_Temperature_Profile   "Temperature Profile"      <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#temperature_2Dprofile"}
+
+Number:Dimensionless  EQ_Ventilation_Activate_Boost  "Activate Boost [%d]" <flow>     (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#boost_2Dmode"}
+Number:Dimensionless  EQ_Ventilation_Activate_Away   "Activate Away  [%d]" <suitcase> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#away_2Dmode"}
