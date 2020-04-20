@@ -37,7 +37,6 @@ def main():
 
 
     if args.logfile is not None:
-        # LOG_FILE = os.path.expanduser("~") + "/comfoairqhomie.log"
         file_handler = TimedRotatingFileHandler(args.logfile, when="midnight")
         file_handler.setFormatter(FORMATTER)
         logger.addHandler(file_handler)

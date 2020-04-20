@@ -264,8 +264,6 @@ class Device_ComfoAirQ(Device_Base):
         # SETTING_HEATING_SEASON = 210
 #end additionals
 
-# Gateway Controls
-
         self.start()
         self.publish_connection_status()
 
@@ -386,6 +384,12 @@ class Device_ComfoAirQ(Device_Base):
 
 
     def publish_connection_status(self):
+        # OpenHAB  problems workaroud 
+        # https://github.com/openhab/openhab-addons/issues/6975
+        if self._mqtt_connected:
+            self.publish_attributes()
+            self.publish_nodes()
+
         if self.comfoairq is None:
             self.state = 'alert'
         elif self.comfoairq._exit:

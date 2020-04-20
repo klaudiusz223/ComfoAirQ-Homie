@@ -67,6 +67,12 @@ class Device_ComfoAirQ_Gateway(Device_Base):
 
 
     def publish_connection_status(self):
+        # OpenHAB  problems workaroud 
+        # https://github.com/openhab/openhab-addons/issues/6975
+        if self._mqtt_connected:
+            self.publish_attributes()
+            self.publish_nodes()
+
         if self.device_comfoairq.comfoairq._exit:
             self.get_node('sensors').get_property('state').value = 'DISCONNECTED'
         elif self.device_comfoairq.comfoairq.comfoconnect is None:
