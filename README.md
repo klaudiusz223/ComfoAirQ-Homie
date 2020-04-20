@@ -1,10 +1,12 @@
 # ComfoAirQ-Homie
-**Homie4 for Zehnder ComfoAirQ**
+**Homie4 for Zehnder ComfoAirQ350/450/600 ventilation units**
 
-Uses pycomfoconnect library (https://github.com/michaelarnauts/comfoconnect/tree/master/pycomfoconnect) .<br/>
-Currently recommended version of pycomfoconnect is https://github.com/jonesPD/comfoconnect/tree/patch-3 - also cloned to https://github.com/klaudiusz223/comfoconnect/tree/patch-3
+Uses pycomfoconnect (https://github.com/michaelarnauts/comfoconnect/) and Homie4 (https://github.com/mjcumming/homie4) .<br/>
 
 ## Installation:
+
+ComfoAirQ-Homie requires pycomfoconnect library from master branch. Version from PyPI repository is too old
+But currently recommended version of pycomfoconnect is https://github.com/jonesPD/comfoconnect/tree/patch-3 - also cloned to https://github.com/klaudiusz223/comfoconnect/tree/patch-3
 
 ```
 pip3 install --upgrade git+https://github.com/klaudiusz223/comfoconnect.git@patch-3
