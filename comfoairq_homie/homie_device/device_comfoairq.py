@@ -37,8 +37,8 @@ SWITCH_VALUES = {
 }
 
 SEASONS_VALUES = {
-    0  :       'ACTIVATED',
-    1  :       'NOT ACTIVATED',
+    0  :       'INACTIVE',
+    1  :       'ACTIVE',
 }
 
 
