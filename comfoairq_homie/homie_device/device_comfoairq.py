@@ -271,12 +271,10 @@ class Device_ComfoAirQ(Device_Base):
         self.comfoairq.exit()
 
     def connect(self):
-        self.comfoairq._stay_connected = True
-        self.comfoairq.connection_event.set()
+        self.comfoairq.connect()
 
     def disconnect(self):
-        self.comfoairq._stay_connected = False
-        self.comfoairq.connection_event.set()
+        self.comfoairq.disconnect()
 
 
     def set_fan_mode(self,value):
@@ -386,24 +384,27 @@ class Device_ComfoAirQ(Device_Base):
     def publish_connection_status(self):
         # OpenHAB  problems workaroud 
         # https://github.com/openhab/openhab-addons/issues/6975
-        if self._mqtt_connected:
-            self.publish_attributes()
-            self.publish_nodes()
+        # if self._mqtt_connected:
+        #     self.publish_attributes()
+        #     if self.state == 'ready':
+                # self.publish_nodes()
 
         if self.comfoairq is None:
+            logger.info("set state -  alert 1")
             self.state = 'alert'
         elif self.comfoairq._exit:
             self.state = 'disconnected'
-        elif self.comfoairq.comfoconnect is None:
-            self.state = 'alert'
-        elif self.comfoairq.comfoconnect.is_connected():
-            self.state = 'ready'
-        elif self.comfoairq._stay_connected:
-            self.state = 'alert'
-            time.sleep(60)
-            if not self.comfoairq.comfoconnect.is_connected():
-                self.comfoairq.connect()
-        else:
+            logger.info("set state -  disconnected")
+        elif self.comfoairq._stay_connected == False:
+            logger.info("set state -  sleeping")
             self.state = 'sleeping'
-
+        elif self.comfoairq.comfoconnect_bridge is None:
+            self.state = 'alert'
+            logger.info("set state -  alert 2")
+        elif self.comfoairq.comfoconnect.is_connected() == False:
+            logger.info("set state -  alert 3")
+            self.state = 'alert'
+        else:
+            logger.info("set state -  ready")
+            self.state = 'ready'
             

@@ -6,6 +6,10 @@ from homie.node.node_base import Node_Base
 from homie.node.property.property_switch import Property_Switch
 from homie.node.property.property_enum import Property_Enum
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 DEVICE_STATES = ['DISCONNECTED','READY','SLEEPING','ERROR','PROBLEM']
 
 
@@ -69,20 +73,23 @@ class Device_ComfoAirQ_Gateway(Device_Base):
     def publish_connection_status(self):
         # OpenHAB  problems workaroud 
         # https://github.com/openhab/openhab-addons/issues/6975
-        if self._mqtt_connected:
-            self.publish_attributes()
-            self.publish_nodes()
+        # if self._mqtt_connected:
+        #     self.publish_attributes()
+        #     self.publish_nodes()
 
-        if self.device_comfoairq.comfoairq._exit:
-            self.get_node('sensors').get_property('state').value = 'DISCONNECTED'
-        elif self.device_comfoairq.comfoairq.comfoconnect is None:
+        logger.info("comfoairq publish_connection_status")
+        if self.device_comfoairq.comfoairq is None:
             self.get_node('sensors').get_property('state').value = 'ERROR'
-        elif self.device_comfoairq.comfoairq.comfoconnect.is_connected():
-            self.get_node('sensors').get_property('state').value = 'READY'
-        elif self.device_comfoairq.comfoairq._stay_connected:
+        elif self.device_comfoairq.comfoairq._exit:
+            self.get_node('sensors').get_property('state').value = 'DISCONNECTED'
+        elif self.device_comfoairq.comfoairq._stay_connected == False:
+            self.get_node('sensors').get_property('state').value = 'SLEEPING'
+        elif self.device_comfoairq.comfoairq.comfoconnect_bridge is None:
+            self.get_node('sensors').get_property('state').value = 'ERROR'
+        elif self.device_comfoairq.comfoairq.comfoconnect.is_connected() == False:
             self.get_node('sensors').get_property('state').value = 'PROBLEM'
         else:
-            self.get_node('sensors').get_property('state').value = 'SLEEPING'
+            self.get_node('sensors').get_property('state').value = 'READY'
 
         if self.device_comfoairq.comfoairq._stay_connected:
             self.get_node('controls').get_property('stayconnected').value = 'ON'

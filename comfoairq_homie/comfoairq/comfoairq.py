@@ -27,7 +27,7 @@ class ComfoAirQ(object):
         self.comfoconnect_settings = comfoconnect_settings
         self.connection_event = threading.Event()
 
-        self._init_thread = threading.Thread(target=self._init_thread_loop,name="ComfoAirQInitThread")
+        self._init_thread = threading.Thread(target=self._thread_loop,name="ComfoAirQThread")
         self._init_thread.start()
 
 
@@ -80,50 +80,61 @@ class ComfoAirQ(object):
         pass
     
     def disconnect(self):
-        if self.comfoconnect.is_connected():
-            self.comfoconnect.disconnect()
-        self.run_on_state_change_callbacks()
+        logger.info("Disconnection request")
+        self._stay_connected = False
+        self.connection_event.set()
 
     def connect(self):
-        if not self.comfoconnect.is_connected():
-            self.comfoconnect.connect()
-            for sensor in self.registered_sensors:
-                self.comfoconnect.register_sensor(sensor,self.registered_sensors[sensor])
-        self.run_on_state_change_callbacks()
+        logger.info("Connection request")
+        self._stay_connected = True
+        self.connection_event.set()
 
-
-    def _comfoconnect_thread_loop(self):
+    def _thread_loop(self):
         while not self._exit:
-            event_recieved = self.connection_event.wait(60)
-            if event_recieved:
+            logger.info("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
+            if self._stay_connected:
+                logger.info("_stay connected is True - {}".format(self._stay_connected))
+                if self.comfoconnect_bridge is None:
+                    self.comfoconnect_bridge = self.bridge_discovery(self.comfoconnect_settings['COMFOCONNECT_HOST'])
+                    if  self.comfoconnect_bridge is not None:
+                        self.comfoconnect = ComfoConnect(self.comfoconnect_bridge, 
+                                                        bytes.fromhex(self.comfoconnect_settings['COMFOCONNECT_UUID']), 
+                                                        self.comfoconnect_settings['COMFOCONNECT_NAME'],
+                                                        self.comfoconnect_settings['COMFOCONNECT_PIN'])
+                        self.comfoconnect.callback_sensor = self.callback_sensor_function
+                        try:
+                            logger.info("Trying to connect")
+                            self.comfoconnect.connect(True)
+                            for sensor in self.registered_sensors:
+                                self.comfoconnect.register_sensor(sensor,self.registered_sensors[sensor])
+                        except (Exception) as ex:
+                            logger.warning("Comfoairq Could not connect to the bridge")
+                            logger.warning(ex)
+                            logger.info("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
+                            self.comfoconnect_bridge = None                    
+                else:
+                    logger.info("comfoconnect.is_connected is : {}".format(self.comfoconnect.is_connected()))
+                    if not self.comfoconnect.is_connected():
+                        logger.info("Disconnection attempt ")
+                        self.comfoconnect.disconnect()
+                        self.comfoconnect_bridge = None
+            else:                
+                logger.info("_stay connected is False - {}".format(self._stay_connected))
+                if self.comfoconnect_bridge is not None:
+                    if self.comfoconnect.is_connected():
+                        logger.info("Disconnection after request")
+                        self.comfoconnect.disconnect()
+                    self.comfoconnect_bridge = None
+            self.run_on_state_change_callbacks()
+            if self.connection_event.wait(60):
+                logger.info("connection event recieved")
                 self.connection_event.clear()
-                if self._exit:
-                    break
-                if self._stay_connected:
-                    self.connect()
-                elif not self._stay_connected:
-                    self.disconnect()
-            else:
-                self.run_on_state_change_callbacks()
-        self.disconnect()
-
-    def _init_thread_loop(self):
-        while not self._exit:
-            self.comfoconnect_bridge = self.bridge_discovery(self.comfoconnect_settings['COMFOCONNECT_HOST'])
-
-        ## Setup a Comfoconnect session  ###################################################################################
-            if  self.comfoconnect_bridge is not None:
-                self.comfoconnect = ComfoConnect(self.comfoconnect_bridge, 
-                                                bytes.fromhex(self.comfoconnect_settings['COMFOCONNECT_UUID']), 
-                                                self.comfoconnect_settings['COMFOCONNECT_NAME'],
-                                                self.comfoconnect_settings['COMFOCONNECT_PIN'])
-                self.comfoconnect.callback_sensor = self.callback_sensor_function
-
-                self._comfoconnect_thread = threading.Thread(target=self._comfoconnect_thread_loop,name="ComfoAirQThread")
-                self._comfoconnect_thread.start()
-
-                break
-        # time.sleep(60)
+        #_exit == True       
+        if self.comfoconnect_bridge is not None:
+            if self.comfoconnect.is_connected():
+                self.comfoconnect.disconnect()
+                self.comfoconnect_bridge = None
+        self.run_on_state_change_callbacks()
 
     def add_on_state_change_callback(self, callback):
         self.state_callbacks.append(callback)
