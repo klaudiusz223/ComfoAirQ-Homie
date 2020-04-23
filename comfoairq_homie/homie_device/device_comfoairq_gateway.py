@@ -1,3 +1,4 @@
+import time
 
 from homie.support.repeating_timer import Repeating_Timer
 from homie.device_base import Device_Base
@@ -39,8 +40,12 @@ class Device_ComfoAirQ_Gateway(Device_Base):
 
         node.add_property(Property_Switch(node,id='stayconnected',name = 'Stay connected to Comfoconnect' ,settable = True, set_value=self.set_stay_connected))
 
+        node.add_property(Property_Switch(node,id='reload',name = 'Publish Homie Devices' ,settable = True, set_value=self.set_reload))
+
         node = Node_Base(self,'sensors','ComfoAirQ Gateway Sensors','sensors')
         self.add_node (node)
+
+
 
         node.add_property (Property_Enum (node,id='state',name = 'Connection state',settable = False,data_format=','.join(DEVICE_STATES)))
 
@@ -68,6 +73,22 @@ class Device_ComfoAirQ_Gateway(Device_Base):
             elif value == "OFF":
                 self.device_comfoairq.disconnect()
             pass
+
+    def set_reload(self,value):
+        # OpenHAB  problems workaroud 
+        # https://github.com/openhab/openhab-addons/issues/6975        
+        self.publish_attributes()
+        self.publish_nodes()
+
+        if self.device_comfoairq:
+            if value == "ON":
+                self.device_comfoairq.publish_attributes()
+                self.device_comfoairq.disconnect()
+                time.sleep(1)
+                self.device_comfoairq.connect()
+                self.device_comfoairq.publish_nodes()                
+        time.sleep(1)
+        self.get_node('controls').get_property('reload').value = 'OFF'
 
 
     def publish_connection_status(self):
