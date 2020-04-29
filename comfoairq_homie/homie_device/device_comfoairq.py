@@ -89,21 +89,23 @@ OPERATING_MODES_SENSOR_VALUES = {
 
 comfoairq_sensors = {
 #   comfoconnect sensor         : [(    sensor_id         ,     sensor_type        ,     transformation_function, z9function_args)), ]
-    SENSOR_TEMPERATURE_OUTDOOR  : [("temperature-outdoor",    "Temperature Outdoor",  "temperature" , multiply , (0.1,), ),],
-    SENSOR_TEMPERATURE_SUPPLY   : [("temperature-supply" ,    "Temperature Supply",   "temperature" , multiply , (0.1,), ),],
-    SENSOR_TEMPERATURE_EXTRACT  : [("temperature-extract",    "Temperature Extract",  "temperature" , multiply , (0.1,), ),],
-    SENSOR_TEMPERATURE_EXHAUST  : [("temperature-exhaust",    "Temperature Exhaust",  "temperature" , multiply , (0.1,), ),],
+    SENSOR_TEMPERATURE_OUTDOOR  : [("temperature-outdoor",    "Temperature Outdoor",  "temperature" , multiply , (0.1,1,), ),],
+    SENSOR_TEMPERATURE_SUPPLY   : [("temperature-supply" ,    "Temperature Supply",   "temperature" , multiply , (0.1,1,), ),],
+    SENSOR_TEMPERATURE_EXTRACT  : [("temperature-extract",    "Temperature Extract",  "temperature" , multiply , (0.1,1,), ),],
+    SENSOR_TEMPERATURE_EXHAUST  : [("temperature-exhaust",    "Temperature Exhaust",  "temperature" , multiply , (0.1,1,), ),],
 
-    SENSOR_HUMIDITY_EXTRACT     : [("humidity-extract",       "Humidity Extract",     "humidity" , None     ,(),),],
-    SENSOR_HUMIDITY_EXHAUST     : [("humidity-exhaust",       "Humidity Exhaust",     "humidity" , None     ,(),),],
-    SENSOR_HUMIDITY_OUTDOOR     : [("humidity-outdoor",       "Humidity Outdoor",     "humidity" , None     ,(),),],
-    SENSOR_HUMIDITY_SUPPLY      : [("humidity-supply",        "Humidity Supply",      "humidity" , None     ,(),),],
+    SENSOR_HUMIDITY_EXTRACT     : [("humidity-extract",       "Humidity Extract",     "percentage" , None     ,(),),],
+    SENSOR_HUMIDITY_EXHAUST     : [("humidity-exhaust",       "Humidity Exhaust",     "percentage" , None     ,(),),],
+    SENSOR_HUMIDITY_OUTDOOR     : [("humidity-outdoor",       "Humidity Outdoor",     "percentage" , None     ,(),),],
+    SENSOR_HUMIDITY_SUPPLY      : [("humidity-supply",        "Humidity Supply",      "percentage" , None     ,(),),],
 
-    SENSOR_FAN_EXHAUST_DUTY     : [("fan-exhaust-duty"     ,"Exhaust Fan Duty" ,"fan_duty"  , None ,(),),],
-    SENSOR_FAN_SUPPLY_DUTY      : [("fan-supply-duty"      ,"Supply Fan Duty"  ,"fan_duty"  , None ,(),),],
+    SENSOR_FAN_EXHAUST_DUTY     : [("fan-exhaust-duty"        ,"Exhaust Fan Duty" ,  "percentage"  , None ,(),),],
+    SENSOR_FAN_SUPPLY_DUTY      : [("fan-supply-duty"         ,"Supply Fan Duty"  ,  "percentage"  , None ,(),),],
+
     SENSOR_FAN_EXHAUST_FLOW     : [("fan-exhaust-flow"     ,"Exhaust Fan Flow" ,"fan_flow"  , None ,(),),],
     SENSOR_FAN_SUPPLY_FLOW      : [("fan-supply-flow"      ,"Supply Fan Flow"  ,"fan_flow"  , None ,(),),],
-    SENSOR_FAN_EXHAUST_SPEED    : [("fan-exhaust-speed"    ,"Exhaust Fan Speed","fan_speed" , None ,(),),],
+    SENSOR_FAN_EXHAUST_SPEED    : [("fan-exhaust-speed"    ,"Exhaust Fan Speed","fan_speed" , None ,(),),
+                                   ("fan-exhaust-speed-smoothed" ,"Exhaust Fan Speed Smoothed","fan_speed" , transform_smooth_fan_speed ,('fan-exhaust-speed-smoothed',23,'bartlett',),),],
     SENSOR_FAN_SUPPLY_SPEED     : [("fan-supply-speed"     ,"Supply Fan Speed" ,"fan_speed" , None ,(),),],
 
     SENSOR_FAN_NEXT_CHANGE      : [("mode-end-date"                 ,"Operating Mode Change Date" ,"mode_end_date"                 , calculate_end_date ,(),),
@@ -135,8 +137,8 @@ comfoairq_sensors = {
 
     SENSOR_DAYS_TO_REPLACE_FILTER         : [("filter-replace"          ,"Filter replace" ,"integer" , None ,(),),],
 
-    SENSOR_CURRENT_RMOT                   : [("current-rmot"            ,"Running Mean Outdoor Temperature"   ,"temperature" , multiply , (0.1,), ),],
-    SENSOR_BYPASS_STATE                   : [("bypass-state"            ,"Bypass state"   ,"humidity" , None ,(),),],
+    SENSOR_CURRENT_RMOT                   : [("current-rmot"            ,"Running Mean Outdoor Temperature"   ,"temperature" , multiply , (0.1,1,), ),],
+    SENSOR_BYPASS_STATE                   : [("bypass-state"            ,"Bypass state"   ,"percentage" , None ,(),),],
 
     SENSOR_HEATING_SEASON                 : [("heating-season"          ,"Heating Season" ,"enum" , transform_dict ,SEASONS_VALUES,),],
 }
@@ -194,13 +196,11 @@ class Device_ComfoAirQ(Device_Base):
                 sensor_id ,sensor_name ,sensor_type, transformation_function, function_args =  homie_sensor
                 if sensor_type == 'temperature':
                     node.add_property (Property_Temperature (node,id=sensor_id,name = sensor_name, unit='°C'))
-                elif sensor_type == 'humidity':
-                    node.add_property (Property_Humidity (node,id=sensor_id,name = sensor_name))
                 elif sensor_type == 'fan_speed':
                     node.add_property (Property_Float (node,id=sensor_id,name = sensor_name,settable = False,unit='rpm'))
                 elif sensor_type == 'fan_flow':
                     node.add_property (Property_Float (node,id=sensor_id,name = sensor_name,settable = False,unit='m³/h'))
-                elif sensor_type == 'fan_duty':
+                elif sensor_type == 'percentage':
                     node.add_property (Property_Float (node,id=sensor_id,name = sensor_name,settable = False,unit='%'))
                 elif sensor_type == 'mode_end_date':
                     node.add_property (Property_DateTime (node,id=sensor_id,name = sensor_name,settable = False,data_format='%Y-%m-%d %H:%M:%S.%f'))
