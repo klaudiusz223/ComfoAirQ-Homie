@@ -1,5 +1,6 @@
 import datetime
 import struct
+import time
 
 import logging
 
@@ -118,3 +119,17 @@ def transform_smooth_fan_speed(var,value,function_args):
     # print(len(smoothed))
     return int(round(smoothed[-1]))    
     # return value
+
+
+slow_down_dict = {}
+
+def slow_down(var,value,function_args):
+    # print(function_args[0])
+    sensor_name = function_args[0]
+    timeout = function_args[1]
+    treshold =  function_args[2]
+    if not sensor_name in slow_down_dict.keys() or abs((value - slow_down_dict[sensor_name][0])) > abs(treshold  * value) or time.time() >= (slow_down_dict[sensor_name][1] + timeout ):
+        slow_down_dict[sensor_name] = (value,time.time())
+        return value
+    else:
+        return None

@@ -99,14 +99,19 @@ comfoairq_sensors = {
     SENSOR_HUMIDITY_OUTDOOR     : [("humidity-outdoor",       "Humidity Outdoor",     "percentage" , None     ,(),),],
     SENSOR_HUMIDITY_SUPPLY      : [("humidity-supply",        "Humidity Supply",      "percentage" , None     ,(),),],
 
-    SENSOR_FAN_EXHAUST_DUTY     : [("fan-exhaust-duty"        ,"Exhaust Fan Duty" ,  "percentage"  , None ,(),),],
-    SENSOR_FAN_SUPPLY_DUTY      : [("fan-supply-duty"         ,"Supply Fan Duty"  ,  "percentage"  , None ,(),),],
+    SENSOR_FAN_EXHAUST_DUTY     : [("fan-exhaust-duty"        ,"Exhaust Fan Duty" ,  "percentage"  , None ,(),),
+                                   ("fan-exhaust-duty-low-rate"        ,"Exhaust Fan Duty" ,  "percentage"  , slow_down ,('fan-exhaust-duty-low-rate',200,0.03,),),],
+    SENSOR_FAN_SUPPLY_DUTY      : [("fan-supply-duty"         ,"Supply Fan Duty"  ,  "percentage"  , None ,(),),
+                                   ("fan-supply-duty-low-rate"         ,"Supply Fan Duty"  ,  "percentage"  , slow_down ,('fan-supply-duty-low-rate',200,0.03,),),],
 
-    SENSOR_FAN_EXHAUST_FLOW     : [("fan-exhaust-flow"     ,"Exhaust Fan Flow" ,"fan_flow"  , None ,(),),],
-    SENSOR_FAN_SUPPLY_FLOW      : [("fan-supply-flow"      ,"Supply Fan Flow"  ,"fan_flow"  , None ,(),),],
+    SENSOR_FAN_EXHAUST_FLOW     : [("fan-exhaust-flow"     ,"Exhaust Fan Flow" ,"fan_flow"  , None ,(),),
+                                   ("fan-exhaust-flow-low-rate"     ,"Exhaust Fan Flow" ,"fan_flow"  , slow_down ,('fan-exhaust-flow-low-rate',200,0.015,),),],
+    SENSOR_FAN_SUPPLY_FLOW      : [("fan-supply-flow"      ,"Supply Fan Flow"  ,"fan_flow"  , None ,(),),
+                                   ("fan-supply-flow-low-rate"      ,"Supply Fan Flow"  ,"fan_flow"  , slow_down ,('fan-exhaust-flow-low-rate',200,0.015,),),],
     SENSOR_FAN_EXHAUST_SPEED    : [("fan-exhaust-speed"    ,"Exhaust Fan Speed","fan_speed" , None ,(),),
-                                   ("fan-exhaust-speed-smoothed" ,"Exhaust Fan Speed Smoothed","fan_speed" , transform_smooth_fan_speed ,('fan-exhaust-speed-smoothed',23,'bartlett',),),],
-    SENSOR_FAN_SUPPLY_SPEED     : [("fan-supply-speed"     ,"Supply Fan Speed" ,"fan_speed" , None ,(),),],
+                                   ("fan-exhaust-speed-low-rate" ,"Exhaust Fan Speed","fan_speed" , slow_down ,('fan-exhaust-speed-low-rate',200,0.015,),),],
+    SENSOR_FAN_SUPPLY_SPEED     : [("fan-supply-speed"     ,"Supply Fan Speed" ,"fan_speed" , None ,(),),
+                                   ("fan-supply-speed-low-rate" ,"Supply Fan Speed","fan_speed" , slow_down ,('fan-supply-speed-low-rate',200,0.015,),),],
 
     SENSOR_FAN_NEXT_CHANGE      : [("mode-end-date"                 ,"Operating Mode Change Date" ,"mode_end_date"                 , calculate_end_date ,(),),
                                    ("mode-timer"                    ,"Operating Mode Remaining Time" ,"mode_timer"                 , calculate_timer ,(),),],
@@ -119,19 +124,23 @@ comfoairq_sensors = {
 
     SENSOR_OPERATING_MODE_BIS   : [("current-mode"        ,"Current Mode"     ,"enum" , transform_dict,   CURRENT_OPERATING_MODE_SENSOR_VALUES),],
     
-    SENSOR_POWER_CURRENT        : [("current-power"       ,"Current Power"             ,"power_current" , None,(),),],
+    SENSOR_POWER_CURRENT        : [("current-power"       ,"Current Power"             ,"power_current" , None,(),),
+                                   ("current-power-low-rate"       ,"Current Power"             ,"power_current" , slow_down ,('current-power-low-rate',200,0.03,),),],
     SENSOR_POWER_TOTAL_YEAR     : [("energy-ytd"          ,"Energy YTD"                ,"energy"        , None,(),),],
     SENSOR_POWER_TOTAL          : [("energy-total"        ,"Energy Total"              ,"energy"        , None,(),),],
 
-    SENSOR_PREHEATER_POWER_CURRENT        : [("preheater-current-power"       ,"Preheater Current Power"             ,"power_current" , None,(),),],
+    SENSOR_PREHEATER_POWER_CURRENT        : [("preheater-current-power"       ,"Preheater Current Power"             ,"power_current" , None,(),),
+                                             ("preheater-current-power-low-rate"       ,"Preheater Current Power"             ,"power_current" , slow_down ,('preheater-current-power-low-rate',20,0.03,),),],
     SENSOR_PREHEATER_POWER_TOTAL_YEAR     : [("preheater-energy-ytd"          ,"Preheater Energy YTD"                ,"energy"        , None,(),),],
     SENSOR_PREHEATER_POWER_TOTAL          : [("preheater-energy-total"        ,"Preheater Energy Total"              ,"energy"        , None,(),),],
 
-    SENSOR_AVOIDED_HEATING_CURRENT        : [("avoided-heating-current-power"      ,"Avoided Heating Current Power"             ,"power_current" , None,(),),],
+    SENSOR_AVOIDED_HEATING_CURRENT        : [("avoided-heating-current-power"      ,"Avoided Heating Current Power"             ,"power_current" , None,(),),
+                                             ("avoided-heating-current-power-low-rate"      ,"Avoided Heating Current Power"             ,"power_current" , slow_down ,('avoided-heating-current-power-low-rate',20,0.03,),),],
     SENSOR_AVOIDED_HEATING_TOTAL_YEAR     : [("avoided-heating-energy-ytd"          ,"Avoided Heating Energy YTD"                ,"energy"        , None,(),),],
     SENSOR_AVOIDED_HEATING_TOTAL          : [("avoided-heating-energy-total"        ,"Avoided Heating Energy Total"              ,"energy"        , None,(),),],
 
-    SENSOR_AVOIDED_COOLING_CURRENT        : [("avoided-cooling-current-power"       ,"Avoided Cooling Current Power"             ,"power_current" , None,(),),],
+    SENSOR_AVOIDED_COOLING_CURRENT        : [("avoided-cooling-current-power"       ,"Avoided Cooling Current Power"             ,"power_current" , None,(),),
+                                             ("avoided-cooling-current-power-low-rate"       ,"Avoided Cooling Current Power"             ,"power_current" , slow_down ,('avoided-cooling-current-power-low-rate',20,0.03,),),],
     SENSOR_AVOIDED_COOLING_TOTAL_YEAR     : [("avoided-cooling-energy-ytd"          ,"Avoided Cooling Energy YTD"                ,"energy"        , None,(),),],
     SENSOR_AVOIDED_COOLING_TOTAL          : [("avoided-cooling-energy-total"        ,"Avoided Cooling Energy Total"              ,"energy"        , None,(),),],
 
@@ -374,8 +383,9 @@ class Device_ComfoAirQ(Device_Base):
                 if transformation_function is None:
                     self.get_node('sensors').get_property(sensor_id).value  = value
                 else:
-                    self.get_node('sensors').get_property(sensor_id).value  = transformation_function(var,value,function_args)
-
+                    ret_value = transformation_function(var,value,function_args)
+                    if ret_value is not None:
+                        self.get_node('sensors').get_property(sensor_id).value  = ret_value
         if var in self.comfoairq_controls:
             for callback in self.comfoairq_controls[var]:
                 callback(var,value)
