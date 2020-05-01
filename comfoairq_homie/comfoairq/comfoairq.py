@@ -16,6 +16,7 @@ class ComfoAirQ(object):
     registered_sensors = {}
     _stay_connected = False
     _exit = False
+    _disconnection =False
 
     state_callbacks = []
 
@@ -92,6 +93,18 @@ class ComfoAirQ(object):
     def _thread_loop(self):
         while not self._exit:
             logger.info("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
+            if self._disconnection:
+                if self.comfoconnect_bridge is not None:                    
+                    try:
+                        if self.comfoconnect.is_connected():
+                            logger.info("Disconnection procedure")
+                            self.comfoconnect.disconnect()
+                    except (Exception) as ex:
+                        logger.warning("Disconnection problem")
+                        logger.warning(ex)
+                    self.comfoconnect_bridge = None
+                self.run_on_state_change_callbacks()
+                self._disconnection = False                                                  
             if self._stay_connected:
                 logger.info("_stay connected is True - {}".format(self._stay_connected))
                 if self.comfoconnect_bridge is None:
@@ -105,28 +118,39 @@ class ComfoAirQ(object):
                         try:
                             logger.info("Trying to connect")
                             self.comfoconnect.connect(True)
-                            for sensor in self.registered_sensors:
-                                self.comfoconnect.register_sensor(sensor,self.registered_sensors[sensor])
                         except (Exception) as ex:
                             logger.warning("Comfoairq Could not connect to the bridge")
                             logger.warning(ex)
                             logger.info("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
-                            self.comfoconnect_bridge = None                    
+                            self._disconnection = True
+                            continue
+
+                        try:
+                            for sensor in self.registered_sensors:
+                                self.comfoconnect.register_sensor(sensor,self.registered_sensors[sensor])
+                        except (Exception) as ex:
+                            logger.warning("Comfoairq Could register sensors")
+                            logger.warning(ex)
+                            logger.info("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
+                            logger.info("Disconnection attempt ")
+                            self._disconnection = True                
+                            continue
+                # self.comfoconnect_bridge is not None    
                 else:
                     logger.info("comfoconnect.is_connected is : {}".format(self.comfoconnect.is_connected()))
                     if not self.comfoconnect.is_connected():
                         logger.info("Disconnection attempt ")
-                        self.comfoconnect.disconnect()
-                        self.comfoconnect_bridge = None
+                        self._disconnection = True                
+                        continue
+            #self._stay_connected == false
             else:                
                 logger.info("_stay connected is False - {}".format(self._stay_connected))
                 if self.comfoconnect_bridge is not None:
                     if self.comfoconnect.is_connected():
-                        logger.info("Disconnection after request")
-                        self.comfoconnect.disconnect()
-                    self.comfoconnect_bridge = None
-            self.run_on_state_change_callbacks()
-            if self.connection_event.wait(60):
+                        logger.info("Disconnection request")
+                        self._disconnection = True
+                        continue
+            if self.connection_event.wait(15):
                 logger.info("connection event recieved")
                 self.connection_event.clear()
         #_exit == True       
