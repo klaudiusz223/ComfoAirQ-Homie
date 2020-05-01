@@ -96,9 +96,9 @@ class ComfoAirQ(object):
             if self._disconnection:
                 if self.comfoconnect_bridge is not None:                    
                     try:
-                        if self.comfoconnect.is_connected():
-                            logger.info("Disconnection procedure")
-                            self.comfoconnect.disconnect()
+                        # if self.comfoconnect.is_connected():
+                        logger.info("Disconnection procedure")
+                        self.comfoconnect.disconnect()
                     except (Exception) as ex:
                         logger.warning("Disconnection problem")
                         logger.warning(ex)
