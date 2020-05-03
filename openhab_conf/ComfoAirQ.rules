@@ -27,4 +27,23 @@ then
         sensor.postUpdate(UNDEF)
     }
 
-    end
+end
+
+rule "Reload Homie Devices"
+when
+    Item vEQ_Ventilation_Gateway_Reload_Timer changed to OFF
+then
+    logInfo("homie_rules", "Reload Homie Devices")
+    val mqttActions = getActions("mqtt","mqtt:broker:local")
+    mqttActions.publishMQTT("homie/zehnderq450gateway/controls/reload/set","true", false)
+end
+
+
+rule "Set Reload Homie Devices"
+when
+    System started
+then
+    logInfo("homie_rules", "Set reload Homie Devices")
+    vEQ_Ventilation_Gateway_Reload_Timer.sendCommand(ON)
+end
+
