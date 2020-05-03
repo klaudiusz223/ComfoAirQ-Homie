@@ -16,8 +16,7 @@ class ComfoAirQ(object):
     registered_sensors = {}
     _stay_connected = False
     _exit = False
-    _disconnection =False
-
+    _disconnection = False
     state_callbacks = []
 
 
@@ -81,32 +80,31 @@ class ComfoAirQ(object):
         pass
     
     def disconnect(self):
-        logger.info("Disconnection request")
+        logger.debug("Disconnection request")
         self._stay_connected = False
         self.connection_event.set()
 
     def connect(self):
-        logger.info("Connection request")
+        logger.debug("Connection request")
         self._stay_connected = True
         self.connection_event.set()
 
     def _thread_loop(self):
         while not self._exit:
-            logger.info("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
+            logger.debug("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
             if self._disconnection:
                 if self.comfoconnect_bridge is not None:                    
                     try:
                         # if self.comfoconnect.is_connected():
-                        logger.info("Disconnection procedure")
+                        logger.debug("Disconnection procedure")
                         self.comfoconnect.disconnect()
                     except (Exception) as ex:
-                        logger.warning("Disconnection problem")
                         logger.warning(ex)
                     self.comfoconnect_bridge = None
                 self.run_on_state_change_callbacks()
                 self._disconnection = False                                                  
             if self._stay_connected:
-                logger.info("_stay connected is True - {}".format(self._stay_connected))
+                logger.debug("_stay connected is True")
                 if self.comfoconnect_bridge is None:
                     self.comfoconnect_bridge = self.bridge_discovery(self.comfoconnect_settings['COMFOCONNECT_HOST'])
                     if  self.comfoconnect_bridge is not None:
@@ -116,12 +114,11 @@ class ComfoAirQ(object):
                                                         self.comfoconnect_settings['COMFOCONNECT_PIN'])
                         self.comfoconnect.callback_sensor = self.callback_sensor_function
                         try:
-                            logger.info("Trying to connect")
+                            logger.debug("Trying to connect")
                             self.comfoconnect.connect(True)
                         except (Exception) as ex:
-                            logger.warning("Comfoairq Could not connect to the bridge")
                             logger.warning(ex)
-                            logger.info("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
+                            logger.debug("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
                             self._disconnection = True
                             continue
 
@@ -129,29 +126,34 @@ class ComfoAirQ(object):
                             for sensor in self.registered_sensors:
                                 self.comfoconnect.register_sensor(sensor,self.registered_sensors[sensor])
                         except (Exception) as ex:
-                            logger.warning("Comfoairq Could register sensors")
                             logger.warning(ex)
-                            logger.info("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
-                            logger.info("Disconnection attempt ")
+                            logger.debug("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
+                            logger.debug("Disconnection request")
                             self._disconnection = True                
                             continue
                 # self.comfoconnect_bridge is not None    
                 else:
-                    logger.info("comfoconnect.is_connected is : {}".format(self.comfoconnect.is_connected()))
-                    if not self.comfoconnect.is_connected():
-                        logger.info("Disconnection attempt ")
+                    logger.debug("comfoconnect.is_connected is : {}".format(self.comfoconnect.is_connected()))
+                    if self.comfoconnect.is_connected():
+                        _disconnection_counter = 0
+                    else:
+                        _disconnection_counter = _disconnection_counter  + 1 
+                        logger.debug("_disconnection_counter: {}".format(_disconnection_counter))
+
+                    if _disconnection_counter > 3:
+                        logger.debug("Disconnection request")
                         self._disconnection = True                
-                        continue
+                        continue                    
             #self._stay_connected == false
             else:                
-                logger.info("_stay connected is False - {}".format(self._stay_connected))
+                logger.debug("_stay connected is False - {}".format(self._stay_connected))
                 if self.comfoconnect_bridge is not None:
                     if self.comfoconnect.is_connected():
-                        logger.info("Disconnection request")
+                        logger.debug("Disconnection request")
                         self._disconnection = True
                         continue
             if self.connection_event.wait(15):
-                logger.info("connection event recieved")
+                logger.debug("connection event recieved")
                 self.connection_event.clear()
         #_exit == True       
         if self.comfoconnect_bridge is not None:
