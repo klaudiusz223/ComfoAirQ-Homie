@@ -152,7 +152,7 @@ class ComfoAirQ(object):
                         logger.debug("Disconnection request")
                         self._disconnection = True
                         continue
-            if self.connection_event.wait(15):
+            if self.connection_event.wait(60):
                 logger.debug("connection event recieved")
                 self.connection_event.clear()
         #_exit == True       
