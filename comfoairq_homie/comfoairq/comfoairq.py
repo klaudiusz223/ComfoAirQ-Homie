@@ -71,7 +71,14 @@ class ComfoAirQ(object):
         self.registered_sensors[sensor_id] = sensor_type
         if self.comfoconnect:
             if self.comfoconnect.is_connected():
-                self.comfoconnect.register_sensor(sensor_id,sensor_type)
+                try:
+                    self.comfoconnect.register_sensor(sensor_id,sensor_type)
+                except (Exception) as ex:
+                    logger.warning(ex)
+                    logger.debug("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
+                    logger.warning("Sensor registering failed. Disconnection request")
+                    self._disconnection = True                
+
 
 
     def exit(self):
@@ -96,7 +103,7 @@ class ComfoAirQ(object):
                 if self.comfoconnect_bridge is not None:                    
                     try:
                         # if self.comfoconnect.is_connected():
-                        logger.debug("Disconnection procedure")
+                        logger.info("Disconnection procedure")
                         self.comfoconnect.disconnect()
                     except (Exception) as ex:
                         logger.warning(ex)
@@ -117,6 +124,7 @@ class ComfoAirQ(object):
                             logger.debug("Trying to connect")
                             self.comfoconnect.connect(True)
                         except (Exception) as ex:
+                            logger.warning("Connection failed")
                             logger.warning(ex)
                             logger.debug("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
                             self._disconnection = True
@@ -126,9 +134,10 @@ class ComfoAirQ(object):
                             for sensor in self.registered_sensors:
                                 self.comfoconnect.register_sensor(sensor,self.registered_sensors[sensor])
                         except (Exception) as ex:
+                            logger.warning("Registering sensors failed")
                             logger.warning(ex)
                             logger.debug("Threads :{} - {} ".format(threading.active_count(),threading.enumerate()))
-                            logger.debug("Disconnection request")
+                            logger.warning("Disconnection request")
                             self._disconnection = True                
                             continue
                 # self.comfoconnect_bridge is not None    
@@ -137,16 +146,17 @@ class ComfoAirQ(object):
                     if self.comfoconnect.is_connected():
                         _disconnection_counter = 0
                     else:
-                        _disconnection_counter = _disconnection_counter  + 1 
+                        _disconnection_counter = _disconnection_counter  + 1
+                        logger.warning("Connection lost") 
                         logger.debug("_disconnection_counter: {}".format(_disconnection_counter))
 
                     if _disconnection_counter > 3:
-                        logger.debug("Disconnection request")
+                        logger.warning("Disconnection request. Reconnecting.")
                         self._disconnection = True                
                         continue                    
             #self._stay_connected == false
             else:                
-                logger.debug("_stay connected is False - {}".format(self._stay_connected))
+                logger.debug("_stay connected is False")
                 if self.comfoconnect_bridge is not None:
                     if self.comfoconnect.is_connected():
                         logger.debug("Disconnection request")
