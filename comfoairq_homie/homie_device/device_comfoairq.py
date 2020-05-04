@@ -393,21 +393,15 @@ class Device_ComfoAirQ(Device_Base):
 
     def publish_connection_status(self):
         if self.comfoairq is None:
-            logger.info("set state -  alert 1")
             self.state = 'alert'
         elif self.comfoairq._exit:
             self.state = 'disconnected'
-            logger.info("set state -  disconnected")
         elif self.comfoairq._stay_connected == False:
-            logger.info("set state -  sleeping")
             self.state = 'sleeping'
         elif self.comfoairq.comfoconnect_bridge is None:
             self.state = 'alert'
-            logger.info("set state -  alert 2")
         elif self.comfoairq.comfoconnect.is_connected() == False:
-            logger.info("set state -  alert 3")
             self.state = 'alert'
         else:
-            logger.info("set state -  ready")
             self.state = 'ready'
             

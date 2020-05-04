@@ -92,7 +92,6 @@ class Device_ComfoAirQ_Gateway(Device_Base):
 
 
     def publish_connection_status(self):
-        logger.info("comfoairq publish_connection_status")
         if self.device_comfoairq.comfoairq is None:
             self.get_node('sensors').get_property('state').value = 'ERROR'
         elif self.device_comfoairq.comfoairq._exit:
