@@ -27,9 +27,10 @@ then
         sensor.postUpdate(UNDEF)
     }
 
-end
+    end
 
-rule "Reload Homie Devices"
+
+rule "Reload ComfoAirQ Homie"
 when
     Item vEQ_Ventilation_Gateway_Reload_Timer changed to OFF
 then
@@ -39,11 +40,31 @@ then
 end
 
 
-rule "Set Reload Homie Devices"
+rule "Set Reload Homie Devices on System start"
 when
     System started
 then
-    logInfo("homie_rules", "Set reload Homie Devices")
-    vEQ_Ventilation_Gateway_Reload_Timer.sendCommand(ON)
+    logInfo("homie_rules", "Set reload Homie Devices on system Start")
+    // vEQ_Ventilation_Gateway_Reload_Timer.sendCommand(ON)
 end
 
+
+rule "Update Ventilation_Gateway_Connection_State_Last_Update"
+when
+  Item EQ_Ventilation_Gateway_Connection_State received update
+then
+  vQ_Ventilation_Gateway_Connection_State_Last_Update.postUpdate( new DateTimeType() )
+end
+
+rule "Check and Reload ComfoAirQ Homie"
+when
+    Time cron "0 0/5 * * * ?"
+then
+    if ( now.minusMinutes(3).isAfter((vQ_Ventilation_Gateway_Connection_State_Last_Update.state as DateTimeType).calendar.timeInMillis))
+    {
+        // vEQ_Ventilation_Gateway_Reload_Timer.sendCommand(ON)
+        logInfo("homie_rules", "Reload Homie Devices")
+        val mqttActions = getActions("mqtt","mqtt:broker:local")
+        mqttActions.publishMQTT("homie/zehnderq450gateway/controls/reload/set","true", false)
+    }
+end

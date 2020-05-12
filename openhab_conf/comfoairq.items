@@ -1,9 +1,9 @@
-//Gateway Controll
+//Gateway Control
 Switch      EQ_Ventilation_Gateway_Stay_Connected               "Stay connected to Comfoconnect"  (EQ_Ventilation,gRestorePersistence) {channel="mqtt:homie300:local:zehnderq450gateway:controls#stayconnected"}
 //Gateway sensor
 String      EQ_Ventilation_Gateway_Connection_State             "Connection state"  (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450gateway:sensors#state"}
-
-Switch      vEQ_Ventilation_Gateway_Reload_Timer                 "Reload Homie Devices in 180s" (EQ_Ventilation)  {expire = "180s,command=OFF" }                     
+Switch      vEQ_Ventilation_Gateway_Reload_Timer                "Reload Homie Devices in 60s" (EQ_Ventilation)  {expire = "60s,command=OFF" }                     
+DateTime    vQ_Ventilation_Gateway_Connection_State_Last_Update "Connection state Last Udate [%1$tF %1$tR]"   (EQ_Ventilation,gRestorePersistence)
 
 // Zehnder controlls
 
