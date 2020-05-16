@@ -14,10 +14,10 @@ Number:Temperature      EQ_Ventilation_Extract_Temperature      "Temperature Ext
 Number:Temperature      EQ_Ventilation_Outdoor_Temperature      "Temperature Outdoor  [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Doutdoor"  ,expire="1h"}
 Number:Temperature      EQ_Ventilation_Exhaust_Temperature      "Temperature Exhaust  [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dexhaust"  ,expire="1h"}
 
-Dimmer      EQ_Ventilation_Supply_Humidity       "Humidity Supply"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dsupply"   ,expire="1h"}
-Dimmer      EQ_Ventilation_Extract_Humidity      "Humidity Extract"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dextract"  ,expire="1h"}
-Dimmer      EQ_Ventilation_Outdoor_Humidity      "Humidity Outdoor"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Doutdoor"  ,expire="1h"}
-Dimmer      EQ_Ventilation_Exhaust_Humidity      "Humidity Exhaust"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dexhaust"  ,expire="1h"}
+Dimmer      EQ_Ventilation_Supply_Humidity       "Humidity Supply"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dsupply"   ,expire="1h",autoupdate="false"}
+Dimmer      EQ_Ventilation_Extract_Humidity      "Humidity Extract"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dextract"  ,expire="1h",autoupdate="false"}
+Dimmer      EQ_Ventilation_Outdoor_Humidity      "Humidity Outdoor"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Doutdoor"  ,expire="1h",autoupdate="false"}
+Dimmer      EQ_Ventilation_Exhaust_Humidity      "Humidity Exhaust"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dexhaust"  ,expire="1h",autoupdate="false"}
 
 Number:Dimensionless      EQ_Ventilation_Supply_Speed           "Supply Fan Speed [%d rpm]" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dsupply_2Dspeed_2Dlow_2Drate"  ,expire="1h"}
 Number:Dimensionless      EQ_Ventilation_Exhaust_Speed          "Exhaust Fan Speed [%d rpm]" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dexhaust_2Dspeed_2Dlow_2Drate"  ,expire="1h"}
@@ -25,11 +25,11 @@ Number:Dimensionless      EQ_Ventilation_Exhaust_Speed          "Exhaust Fan Spe
 Number                    EQ_Ventilation_Supply_Flow            "Supply Fan Flow [%d m³/h]" <flow> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dsupply_2Dflow_2Dlow_2Drate"  ,expire="1h"}
 Number                    EQ_Ventilation_Exhaust_Flow           "Exhaust Fan Flow [%d m³/h]" <flow> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dexhaust_2Dflow_2Dlow_2Drate"  ,expire="1h"}
 
-Dimmer                    EQ_Ventilation_Supply_Duty            "Supply Fan Duty"  <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dsupply_2Dduty_2Dlow_2Drate"  ,expire="1h"}
-Dimmer                    EQ_Ventilation_Exhaust_Duty           "Exhaust Fan Duty" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dexhaust_2Dduty_2Dlow_2Drate" ,expire="1h"}
+Dimmer                    EQ_Ventilation_Supply_Duty            "Supply Fan Duty"  <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dsupply_2Dduty_2Dlow_2Drate"  ,expire="1h",autoupdate="false"}
+Dimmer                    EQ_Ventilation_Exhaust_Duty           "Exhaust Fan Duty" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dexhaust_2Dduty_2Dlow_2Drate" ,expire="1h",autoupdate="false"}
 
 Number:Time               EQ_Ventilation_Filter_Replace_Remaining_Time        "Filter Remaining Time [%d d]"              <time> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#filter_2Dreplace"      ,expire="24h"}
-Dimmer                    EQ_Ventilation_Bypass_State           "Bypass State"                      <humidity>  (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#bypass_2Dstate"  ,expire="1h"}
+Dimmer                    EQ_Ventilation_Bypass_State           "Bypass State"                      <humidity>  (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#bypass_2Dstate"  ,expire="1h",autoupdate="false"}
 
 
 DateTime    EQ_Ventilation_Operation_Mode_End_Date              "Operation Mode Mode Change Date [%1$tF %1$tR]"     <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date) 
