@@ -58,3 +58,22 @@ Seting log level using environment variables. Different log level for pycomfocon
 ```
 COMFOAIRQ_LOGLEVEL=ERROR  COMFOAIRQ_COMFOCONNECT_LOGLEVEL=DEBUG comfoairq-homie -c comfoairq_homie.yml -l comfoairq_homie.log
 ```
+## Systemd example service file:
+```
+[Unit]
+Description="Homie4 ComfoAirQ Service"
+After=syslog.target network.target mosquitto.service openhab2.service
+
+
+[Service]
+WorkingDirectory=/opt/comfoairq/
+Environment=COMFOAIRQ_LOGLEVEL=INFO
+Environment=COMFOAIRQ_COMFOCONNECT_LOGLEVEL=INFO
+Environment=PATH=/opt/comfoairq/virtualenv/bin:$PATH
+ExecStart=/opt/comfoairq/virtualenv/bin/comfoairq-homie -c /opt/comfoairq/config/comfoairq_homie.yml -l /opt/comfoairq/log/comfoairq_homie.log
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
