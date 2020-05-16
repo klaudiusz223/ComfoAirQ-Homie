@@ -12,7 +12,7 @@ class ComfoAirQ(object):
     comfoconnect_bridge = None
     comfoconnect = None
     callback_sensor = None
-    connection_event : threading.Event = None
+    connection_event = None
     registered_sensors = {}
     _stay_connected = False
     _exit = False
