@@ -58,7 +58,7 @@ Seting log level using environment variables. Different log level for pycomfocon
 ```
 COMFOAIRQ_LOGLEVEL=ERROR  COMFOAIRQ_COMFOCONNECT_LOGLEVEL=DEBUG comfoairq-homie -c comfoairq_homie.yml -l comfoairq_homie.log
 ```
-## Systemd example service file:
+## Systemd service file example:
 ```
 [Unit]
 Description="Homie4 ComfoAirQ Service"
