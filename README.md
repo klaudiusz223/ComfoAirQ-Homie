@@ -12,8 +12,32 @@ pip3 install --upgrade git+https://github.com/michaelarnauts/comfoconnect.git
 pip3 install git+https://github.com/klaudiusz223/ComfoAirQ-Homie.git
 ```
 
-## Usage examples:
+Create configuration in comfoairq_homie.yml file. ComfoAirQ-Homie searches this file in directory from which is started or it is possible to specify it by command line option "-c filename.yml". 
 
+```
+mqtt:
+  MQTT_BROKER: "192.168.88.10"
+  MQTT_PORT: 1883
+  MQTT_USERNAME: null
+  MQTT_PASSWORD: null
+  MQTT_KEEPALIVE: 60
+  MQTT_CLIENT_ID: null
+  MQTT_SHARE_CLIENT: False
+
+comfoconnect:
+  COMFOCONNECT_HOST : null
+  COMFOCONNECT_PIN  : 0
+  COMFOCONNECT_NAME : "ComfoConnect Homie Gateway"
+  COMFOCONNECT_UUID : "00000000000000000000000000000006"
+
+comfoairq_homie:
+  HOMIE_ID              : zehnderq450
+  HOMIE_NAME            : ZehnderQ450
+  COMFOAIR_AUTOCONNECT  : True
+```
+
+
+## Usage examples:
 
 ```
 comfoairq-homie
