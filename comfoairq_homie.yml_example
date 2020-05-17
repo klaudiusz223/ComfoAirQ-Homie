@@ -12,6 +12,7 @@ comfoconnect:
   COMFOCONNECT_PIN  : 0
   COMFOCONNECT_NAME : "ComfoConnect Homie Gateway"
   COMFOCONNECT_UUID : "00000000000000000000000000000006"
+  COMFOCONNECT_AUTOCONNECT : True
 
 comfoairq_homie:
   HOMIE_ID              : zehnderq450
