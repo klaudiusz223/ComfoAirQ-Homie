@@ -34,7 +34,6 @@ comfoconnect:
 comfoairq_homie:
   HOMIE_ID              : zehnderq450
   HOMIE_NAME            : ZehnderQ450
-  COMFOAIR_AUTOCONNECT  : True
 ```
 
 
