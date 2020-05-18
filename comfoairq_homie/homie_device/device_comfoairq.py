@@ -31,6 +31,14 @@ CURRENT_OPERATING_MODE_SENSOR_VALUES = {
      11 :       'scheduled away',
 }
 
+CURRENT_MODE_SENSOR_VALUES = [
+    'auto',
+    'temporary manual',
+    'manual',
+    'boost',
+    'scheduled away',
+]
+
 SWITCH_VALUES = {
     0  :       'OFF',
     1  :       'ON',
@@ -122,7 +130,7 @@ comfoairq_sensors = {
     SENSOR_SUPPLY_FAN_TIMER     : [("supply-date"                   ,"Supply Fan Start Date" ,"mode_end_date"            , calculate_end_date ,(),),
                                    ("supply-timer"                  ,"Supply Fan Time to Start" ,"mode_timer"         , calculate_timer ,(),),],
 
-    SENSOR_OPERATING_MODE_BIS   : [("current-mode"        ,"Current Mode"     ,"enum" , transform_dict,   CURRENT_OPERATING_MODE_SENSOR_VALUES),],
+    # SENSOR_OPERATING_MODE_BIS   : [("current-mode"        ,"Current Mode"     ,"enum" , transform_dict,   CURRENT_OPERATING_MODE_SENSOR_VALUES),],
     
     SENSOR_POWER_CURRENT        : [("current-power"       ,"Current Power"             ,"power_current" , None,(),),
                                    ("current-power-low-rate"       ,"Current Power"             ,"power_current" , slow_down ,('current-power-low-rate',200,0.03,),),],
@@ -162,6 +170,8 @@ class Device_ComfoAirQ(Device_Base):
     exhaust_fan_stopped = 0
     supply_fan_stopped = 0
 
+    operating_mode_bis = None
+    operating_mode = None
 
     def __init__(
                 self, 
@@ -223,6 +233,13 @@ class Device_ComfoAirQ(Device_Base):
                     node.add_property (Property_Float (node,id=sensor_id,name = sensor_name,settable = False,unit='kWh'))
                 elif sensor_type == 'integer':
                     node.add_property (Property_Integer(node,id=sensor_id,name = sensor_name,settable = False))
+
+# Sensors managed same way as Controls 
+
+        node.add_property(Property_Enum (node,id='current-mode',name ='Current Mode',settable = False,data_format=','.join(CURRENT_OPERATING_MODE_SENSOR_VALUES.values())))
+        self.add_controls_callback(SENSOR_OPERATING_MODE_BIS,self.update_current_mode)
+        self.add_controls_callback(SENSOR_OPERATING_MODE,self.update_current_mode)
+
 # Controls
 
         node = Node_Base(self,'controls','Controls','controls')
@@ -351,7 +368,7 @@ class Device_ComfoAirQ(Device_Base):
         self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x01\x06\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x03')
 
     def update_boost_mode(self,var,value):
-        if self.get_node('sensors').get_property('current-mode').value == CURRENT_OPERATING_MODE_SENSOR_VALUES.get(6):
+        if self.get_node('sensors').get_property('current-mode').value == CURRENT_MODE_SENSOR_VALUES[3]: #boost
             self.get_node('controls').get_property('boost-mode').value = self.get_node('sensors').get_property('mode-timer').value
         else:
             self.get_node('controls').get_property('boost-mode').value = 0
@@ -360,11 +377,30 @@ class Device_ComfoAirQ(Device_Base):
         self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x01\x0b\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x00')                                                      
 
     def update_away_mode(self,var,value):
-        if self.get_node('sensors').get_property('current-mode').value == CURRENT_OPERATING_MODE_SENSOR_VALUES.get(11):
+        if self.get_node('sensors').get_property('current-mode').value == CURRENT_MODE_SENSOR_VALUES[4]:
             self.get_node('controls').get_property('away-mode').value = self.get_node('sensors').get_property('mode-timer').value
         else:
             self.get_node('controls').get_property('away-mode').value = 0
 
+    def update_current_mode(self,var,value):
+        if var == SENSOR_OPERATING_MODE_BIS:
+            self.operating_mode_bis = value
+        if var == SENSOR_OPERATING_MODE:
+            self.operating_mode = value
+
+        if self.operating_mode == -1:
+            if self.operating_mode_bis == -1:
+                self.get_node('sensors').get_property('current-mode').value  = CURRENT_MODE_SENSOR_VALUES[0] # auto
+            elif self.operating_mode_bis == 1:
+                self.get_node('sensors').get_property('current-mode').value  = CURRENT_MODE_SENSOR_VALUES[1] # temporary manual
+        
+        if self.operating_mode_bis == 6 :
+                self.get_node('sensors').get_property('current-mode').value  = CURRENT_MODE_SENSOR_VALUES[3] # boost
+        elif  self.operating_mode_bis == 11 :
+                self.get_node('sensors').get_property('current-mode').value  = CURRENT_MODE_SENSOR_VALUES[4] # scheduled away
+        elif  self.operating_mode_bis in [1,5] and  self.operating_mode == 1:
+                self.get_node('sensors').get_property('current-mode').value  = CURRENT_MODE_SENSOR_VALUES[2] # temporary manual
+        
     def add_controls_callback(self,sensor,callback):
         self.comfoairq.register_sensor(sensor)
         if sensor not in self.comfoairq_controls:
