@@ -33,14 +33,28 @@ sitemap zehnder label="Zehnder"
                             }
 
                             Frame label="Boost" {
-                                Setpoint  item=EQ_Ventilation_Activate_Boost label="Boost - add 10 min" minValue=0 maxValue=4294967295 step=600 
+                                Setpoint  item=EQ_Ventilation_Activate_Boost label="Boost - add 10 min [ ]" minValue=0 maxValue=4294967295 step=600 
                                 Text item=EQ_Ventilation_Operation_Mode_End_Date label="Boost mode till" visibility=[EQ_Ventilation_Current_Mode == "boost"]
                             }
                             Frame label="Away" {
-                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add 10 min" minValue=0 maxValue=4294967295 step=600 
-                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add hours" minValue=0 maxValue=4294967295 step=3600 
-                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add days"  minValue=0 maxValue=4294967295 step=86400 
+                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add 10 min [ ]" minValue=0 maxValue=4294967295 step=600 
+                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add hours [ ]" minValue=0 maxValue=4294967295 step=3600 
+                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add days [ ]"  minValue=0 maxValue=4294967295 step=86400 
                                 Text item=EQ_Ventilation_Operation_Mode_End_Date label="Away scheduled till" visibility=[EQ_Ventilation_Current_Mode == "scheduled away"]
+                            }
+
+                            Frame label="Bypass On" {
+                                Setpoint  item=EQ_Ventilation_Bypass_On label="Bypass On - add 10 min [ ]" minValue=0 maxValue=4294967295 step=600 
+                                Setpoint  item=EQ_Ventilation_Bypass_On label="Bypass On - add hours [ ]" minValue=0 maxValue=4294967295 step=3600 
+                                Setpoint  item=EQ_Ventilation_Bypass_On label="Bypass On - add days [ ]"  minValue=0 maxValue=4294967295 step=86400 
+                                Text item=EQ_Ventilation_Bypass_Manual_Mode_End_Date label="Bypass On scheduled till" visibility=[EQ_Ventilation_Bypass_On > 0]
+                            }
+
+                            Frame label="Bypass Off" {
+                                Setpoint  item=EQ_Ventilation_Bypass_Off label="Bypass Off - add 10 min [ ]" minValue=0 maxValue=4294967295 step=600 
+                                Setpoint  item=EQ_Ventilation_Bypass_Off label="Bypass Off - add hours [ ]" minValue=0 maxValue=4294967295 step=3600 
+                                Setpoint  item=EQ_Ventilation_Bypass_Off label="Bypass Off - add days [ ]"  minValue=0 maxValue=4294967295 step=86400 
+                                Text item=EQ_Ventilation_Bypass_Manual_Mode_End_Date label="Bypass Off scheduled till" visibility=[EQ_Ventilation_Bypass_Off > 0]
                             }
 
 

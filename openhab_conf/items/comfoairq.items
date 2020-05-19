@@ -81,9 +81,12 @@ String EQ_Ventilation_Operating_Mode        "Operating Mode"           <fan>    
 Switch EQ_Ventilation_Manual_Mode           "Manual Mode"              <switch>      (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#manual_2Dmode"}
 String EQ_Ventilation_Fan_Mode              "Fan Mode"                 <fan>         (EQ_Ventilation,gEQ_Ventilation_State) {channel="mqtt:homie300:local:zehnderq450:controls#fan_2Dmode"}
 String EQ_Ventilation_Bypass_Mode           "Bypass Mode"              <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#bypass_2Dmode"}
+Number:Dimensionless EQ_Ventilation_Bypass_On             "Bypass On [%d]"       <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#bypass_2Don"}
+Number:Dimensionless EQ_Ventilation_Bypass_Off            "Bypass Off [%d]"      <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#bypass_2Doff"}
 String EQ_Ventilation_Balance_Mode          "Ventilation Mode"         <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#vent_2Dmode"}
 String EQ_Ventilation_Temperature_Profile   "Temperature Profile"      <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#temperature_2Dprofile"}
 
+// String EQ_Ventilation_Testing_Scripts        "Testing Scripts"         <settings>    (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#testing"}
 
 
 Number:Dimensionless  EQ_Ventilation_Activate_Boost  "Activate Boost [%d]" <flow>     (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#boost_2Dmode"}

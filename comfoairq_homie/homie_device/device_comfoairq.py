@@ -249,10 +249,17 @@ class Device_ComfoAirQ(Device_Base):
         node.add_property(Property_Enum (node,id='fan-mode',name='Fan Mode',data_format=','.join(FAN_MODES.keys()),set_value = lambda value: self.set_fan_mode(value)))
         self.add_controls_callback(SENSOR_FAN_SPEED_MODE,self.update_fan_mode)
 
-# BYPASS  MODE
+# BYPASS  MODE (for 1 hour)
         node.add_property(Property_Enum (node,id='bypass-mode',name='Bypass Mode',data_format=','.join(BYPASS_MODES.keys()),set_value = lambda value: self.set_bypass_mode(value)))
         self.add_controls_callback(SENSOR_BYPASS_MODE,self.update_bypass_mode)
 
+# BYPASS ON 
+        node.add_property(Property_Integer (node,id='bypass-on', name='Bypass On',data_format='0:'+ str(0xffffffff),set_value = lambda value: self.set_bypass_on(value)))
+# BYPASS OFF
+        node.add_property(Property_Integer (node,id='bypass-off', name='Bypass Off',data_format='0:'+ str(0xffffffff),set_value = lambda value: self.set_bypass_off(value)))
+
+        self.add_controls_callback(SENSOR_BYPASS_MODE,self.update_bypass)
+        self.add_controls_callback(SENSOR_BYPASS_TIMER,self.update_bypass)
 
 # TEMPERATURE PROFILE
         node.add_property(Property_Enum (node,id='temperature-profile',name='Temperature Profile',data_format=','.join(TEMPERATURE_PROFILES.keys()),set_value = lambda value: self.set_temperature_profile(value)))
@@ -363,6 +370,23 @@ class Device_ComfoAirQ(Device_Base):
         if self.exhaust_fan_stopped == 1 and self.supply_fan_stopped == 1:
             self.get_node('controls').get_property('vent-mode').value  = list(VENT_MODES.keys())[3] # extract only
 
+
+    def set_bypass_on(self,value):
+        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x02\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
+
+    def set_bypass_off(self,value):
+        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x02\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x02')
+
+    def update_bypass(self,var,value):        
+        if self.get_node('controls').get_property('bypass-mode').value == list(BYPASS_MODES.keys())[1]: #bypass on
+            self.get_node('controls').get_property('bypass-on').value = self.get_node('sensors').get_property('bypass-timer').value
+        else:
+            self.get_node('controls').get_property('bypass-on').value = 0
+
+        if self.get_node('controls').get_property('bypass-mode').value == list(BYPASS_MODES.keys())[2]: #bypass off
+            self.get_node('controls').get_property('bypass-off').value = self.get_node('sensors').get_property('bypass-timer').value
+        else:
+            self.get_node('controls').get_property('bypass-off').value = 0
 
     def set_boost_mode(self,value):
         self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x01\x06\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x03')
