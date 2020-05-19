@@ -1,0 +1,130 @@
+sitemap zehnder label="Zehnder"
+{	
+
+    Frame    {
+        Text label="Zehnder"
+                        {
+                            Frame label="" {
+                                Switch item=EQ_Ventilation_Fan_Mode label="Fan []" mappings=[away="Away",1="1",2="2",3="3"]
+                                Switch item=EQ_Ventilation_Manual_Mode
+                                Text item=EQ_Ventilation_State valuecolor=[
+                                                                           EQ_Ventilation_State == SLEEPING = "maroon",
+                                                                           EQ_Ventilation_State == ERROR = "red",
+                                                                           EQ_Ventilation_State == PROBLEM = "red",
+                                                                           EQ_Ventilation_State == DISCONNECTED = "maroon"
+                                                                           ]
+                                Text item=EQ_Ventilation_Operation_Mode_End_Date label="Current mode till" visibility=[EQ_Ventilation_Operation_Mode_Remaining_Time > 0]
+                            }
+
+
+                            Frame label="Additional Controls" {
+                                Switch item=EQ_Ventilation_Bypass_Mode label="Bypass []" mappings=[auto="Auto",on="On",off="Off"]
+                                Text item=EQ_Ventilation_Bypass_Manual_Mode_End_Date label="Bypass manual mode till" visibility=[EQ_Ventilation_Bypass_Manual_Mode_Remaining_Time > 0]
+                                Switch item=EQ_Ventilation_Temperature_Profile label="Temperature profile []" mappings=[normal="Normal",warm="Warm",cool="Cool"]
+                                Switch item=EQ_Ventilation_Balance_Mode label="Ventilation mode []" mappings=[balance="Balance",'supply only'="Supply",'extract only'="Extract", off="Off"]
+                                Text item=EQ_Ventilation_Fan_Mode_End_Date label="Current mode till" visibility=[EQ_Ventilation_Fan_Mode_End_Date != UNDEF]
+                            }
+
+                            Frame label="Temperature" {
+                                Text item=EQ_Ventilation_Extract_Conditions label="Indoor"
+                                Text item=EQ_Ventilation_Supply_Conditions
+                                Text item=EQ_Ventilation_Outdoor_Conditions 
+                                Text item=EQ_Ventilation_Exhaust_Conditions
+                            }
+
+                            Frame label="Boost" {
+                                Setpoint  item=EQ_Ventilation_Activate_Boost label="Boost - add 10 min" minValue=0 maxValue=4294967295 step=600 
+                                Text item=EQ_Ventilation_Operation_Mode_End_Date label="Boost mode till" visibility=[EQ_Ventilation_Current_Mode == "boost"]
+                            }
+                            Frame label="Away" {
+                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add 10 min" minValue=0 maxValue=4294967295 step=600 
+                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add hours" minValue=0 maxValue=4294967295 step=3600 
+                                Setpoint  item=EQ_Ventilation_Activate_Away label="Away - add days"  minValue=0 maxValue=4294967295 step=86400 
+                                Text item=EQ_Ventilation_Operation_Mode_End_Date label="Away scheduled till" visibility=[EQ_Ventilation_Current_Mode == "scheduled away"]
+                            }
+
+
+                        Frame { 
+                            Text item=EQ_Ventilation_Filter_Replace_Remaining_Time
+                            Text label="More" {
+                                            Frame label="Temperature" {
+                                                Text item=EQ_Ventilation_Supply_Temperature
+                                                Text item=EQ_Ventilation_Extract_Temperature
+                                                Text item=EQ_Ventilation_Outdoor_Temperature
+                                                Text item=EQ_Ventilation_Exhaust_Temperature
+                                                    }
+                                            Frame label="Humidity" {
+                                                Text item=EQ_Ventilation_Supply_Humidity
+                                                Text item=EQ_Ventilation_Extract_Humidity
+                                                Text item=EQ_Ventilation_Outdoor_Humidity
+                                                Text item=EQ_Ventilation_Exhaust_Humidity
+                                                    }
+
+                                            Frame label="Fans" {
+                                                Text item=EQ_Ventilation_Supply_Flow 
+                                                Text item=EQ_Ventilation_Exhaust_Flow
+                                                Text item=EQ_Ventilation_Supply_Speed 
+                                                Text item=EQ_Ventilation_Exhaust_Speed
+                                                Text item=EQ_Ventilation_Supply_Duty 
+                                                Text item=EQ_Ventilation_Exhaust_Duty
+                                            } 
+
+
+                                            Frame label="Energy" {
+                                                Text item=EQ_Ventilation_Current_Power 
+                                                Text item=EQ_Ventilation_Energy_YTD
+                                                Text item=EQ_Ventilation_Energy_Total 
+                                            }                                             
+
+                                            Frame label="Avoided Heating Energy" {
+                                                Text item=EQ_Ventilation_Avoided_Heating_Current_Power 
+                                                Text item=EQ_Ventilation_Avoided_Heating_Energy_YTD
+                                                Text item=EQ_Ventilation_Avoided_Heating_Energy_Total 
+                                            }                                             
+
+                                            Frame label="Avoided Cooling Energy" {
+                                                Text item=EQ_Ventilation_Avoided_Cooling_Current_Power 
+                                                Text item=EQ_Ventilation_Avoided_Cooling_Energy_YTD
+                                                Text item=EQ_Ventilation_Avoided_Cooling_Energy_Total 
+                                            } 
+
+                                            Frame label="Preheater Energy" {
+                                                Text item=EQ_Ventilation_Preheater_Current_Power 
+                                                Text item=EQ_Ventilation_Preheater_Energy_YTD
+                                                Text item=EQ_Ventilation_Preheater_Energy_Total 
+                                            }                                             
+
+                                            Frame label="Season Detection" {
+                                                Text item=EQ_Ventilation_Heating_Season 
+                                                Text item=EQ_Ventilation_Current_RMOT
+                                            } 
+
+                                            Frame label="Other" {
+                                                Text item=EQ_Ventilation_Filter_Replace_Remaining_Time
+                                                Text item=EQ_Ventilation_Bypass_State
+                                            } 
+
+
+                                            Frame { 
+                                                Default item=EQ_Ventilation  label="All Zehnder Items"
+                                            }
+
+                            } 
+                        }
+
+
+                            Frame label="Connection" {
+                                Switch item=EQ_Ventilation_Gateway_Stay_Connected
+                                Text label="Connection details" {
+                                    Switch item=EQ_Ventilation_Gateway_Stay_Connected
+                                    Text item=EQ_Ventilation_Gateway_Connection_State
+                                    Text item=vQ_Ventilation_Gateway_Connection_State_Last_Update
+                                    Switch item=vEQ_Ventilation_Gateway_Reload_Timer                                
+                                }
+                            }
+                        }
+        }
+
+
+}
+

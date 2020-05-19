@@ -1,0 +1,6 @@
+Group           EQ_Ventilation                 "Ventilation equipment"
+
+Group           gEQ_Ventilation_Conditions              "Ventilation Temperature and Humidity"
+Group           gEQ_Ventilation_State                   "Ventilation State Items"
+Group           gEQ_Ventilation_Mode_End_Date_String    "EQ_Ventilation_Mode_End_Date_String"
+Group           gEQ_Ventilation_Mode_End_Date           "EQ_Ventilation_Mode_End_Date"

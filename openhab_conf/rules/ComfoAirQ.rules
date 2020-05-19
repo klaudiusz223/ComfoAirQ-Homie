@@ -68,3 +68,143 @@ then
         mqttActions.publishMQTT("homie/zehnderq450gateway/controls/reload/set","true", false)
     }
 end
+
+
+rule "gEQ_Ventilation_Conditions update state"
+when
+    Member of gEQ_Ventilation_Conditions changed
+then
+    
+    val originalSensor  =  triggeringItem
+    val sensorBaseName  =  originalSensor.name.substring(0, originalSensor.name.lastIndexOf('_'));
+    val GenericItem sensorTemperature = ScriptServiceUtil.getItemRegistry?.getItem(sensorBaseName + '_Temperature') as GenericItem;
+    val GenericItem sensorHumidity = ScriptServiceUtil.getItemRegistry?.getItem(sensorBaseName + '_Humidity') as GenericItem;
+    val GenericItem sensorCondition = ScriptServiceUtil.getItemRegistry?.getItem(sensorBaseName + '_Conditions') as GenericItem;
+
+    var temperature = "-"
+    var humidity = "-"
+
+    if (sensorTemperature.state != UNDEF) {
+        temperature = sensorTemperature.state.toString
+    } 
+
+    if (sensorHumidity.state != UNDEF) {
+        humidity = sensorHumidity.state.toString
+    } 
+    
+    sensorCondition.postUpdate( temperature + " / " + humidity + " %")
+
+end
+
+rule "set EQ_Ventilation_State"
+when
+    Member of gEQ_Ventilation_State changed
+then
+    
+    var temperatureOutdoor = "-"
+    var temperatureSupply = "-"
+    // var temperatureExtract = "-"
+
+    var currentState = "-"
+
+    var flowSupply = 0
+    var flowExhaust = 0
+
+    if (EQ_Ventilation_Outdoor_Temperature.state != UNDEF) {
+        temperatureOutdoor = EQ_Ventilation_Outdoor_Temperature.state.toString
+    } 
+
+    if (EQ_Ventilation_Supply_Temperature.state != UNDEF) {
+        temperatureSupply = EQ_Ventilation_Supply_Temperature.state.toString
+    } 
+
+    // if (EQ_Ventilation_Extract_Temperature.state != UNDEF) {
+    //     temperatureExtract = EQ_Ventilation_Extract_Temperature.state.toString
+    // } 
+
+    if (EQ_Ventilation_Current_Mode.state != UNDEF) {
+        currentState = EQ_Ventilation_Current_Mode.state.toString
+    } 
+
+    if (EQ_Ventilation_Supply_Flow.state != UNDEF) {
+        flowSupply = (EQ_Ventilation_Supply_Flow.state as Number).intValue
+    } 
+
+    if (EQ_Ventilation_Exhaust_Flow.state != UNDEF) {
+        flowExhaust = (EQ_Ventilation_Exhaust_Flow.state as Number).intValue
+    }
+
+    var bypass = ""
+    if ( EQ_Ventilation_Bypass_State.state != UNDEF &&  (EQ_Ventilation_Bypass_State.state as Number).intValue > 0 )
+    {
+        bypass = '⌥'
+    }
+
+    if (currentState == 'auto')
+    {
+        currentState = 'Ⓐ'
+    } else if (currentState == 'manual')
+    {
+        currentState = 'Ⓜ'
+    } else if (currentState == 'temporary manual')
+    {
+        currentState = '🕒 Ⓜ'
+    } else if (currentState == 'scheduled away')
+    {
+        currentState = '🕒 🌴'
+    } else if (currentState == 'boost')
+    {
+        currentState = '🕒 Ⓑ'
+    }
+
+    var flow = Math.max(flowSupply,flowExhaust)
+
+    var ventStateInfo = ""
+
+    if (EQ_Ventilation_Gateway_Connection_State.state.toString == 'READY') {
+        ventStateInfo = currentState + "  " + bypass + " " + temperatureOutdoor + " → " + temperatureSupply + " ✇ " + flow + " m³/h" 
+    } else {
+        ventStateInfo = EQ_Ventilation_Gateway_Connection_State.state.toString
+    } 
+
+
+    EQ_Ventilation_State.postUpdate( ventStateInfo )
+
+end
+
+
+rule "set EQ_Ventilation_Fan_Mode_End_Date"
+when
+    Item EQ_Ventilation_Supply_Fan_Start_Time changed or 
+    Item EQ_Ventilation_Exhaust_Fan_Start_Time changed
+then
+    // Setting  item  EQ_Ventilation_Fan_Mode_End_Date  "Current mode till [%1$tF %1$tR]"  
+    var supplyFanStartTime = 0
+    var exhaustFanStartTime = 0
+
+    if (EQ_Ventilation_Supply_Fan_Start_Time.state != UNDEF) {
+        supplyFanStartTime = (EQ_Ventilation_Supply_Fan_Start_Time.state as Number).intValue
+    }
+
+    if (EQ_Ventilation_Exhaust_Fan_Start_Time.state != UNDEF) {
+        exhaustFanStartTime = (EQ_Ventilation_Exhaust_Fan_Start_Time.state as Number).intValue
+    }
+
+
+    logInfo("VENT", "Supply  time {}", supplyFanStartTime )
+    logInfo("VENT", "Exhaust time {}", exhaustFanStartTime )
+
+    if (supplyFanStartTime > 0  && exhaustFanStartTime > 0 ) {
+        if (supplyFanStartTime <= exhaustFanStartTime){
+            EQ_Ventilation_Fan_Mode_End_Date.postUpdate(EQ_Ventilation_Supply_Fan_Start_Date.state)
+        } else {
+            EQ_Ventilation_Fan_Mode_End_Date.postUpdate(EQ_Ventilation_Exhaust_Fan_Start_Date.state)
+        }
+
+    } else if ( supplyFanStartTime <= exhaustFanStartTime) {
+           EQ_Ventilation_Fan_Mode_End_Date.postUpdate(EQ_Ventilation_Exhaust_Fan_Start_Date.state)
+    } else if ( supplyFanStartTime > exhaustFanStartTime) {
+            EQ_Ventilation_Fan_Mode_End_Date.postUpdate(EQ_Ventilation_Supply_Fan_Start_Date.state)
+    }
+
+end
