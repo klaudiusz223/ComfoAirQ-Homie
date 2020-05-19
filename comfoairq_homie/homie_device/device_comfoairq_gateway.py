@@ -73,6 +73,8 @@ class Device_ComfoAirQ_Gateway(Device_Base):
             elif value == "OFF":
                 self.device_comfoairq.disconnect()
             pass
+            time.sleep(2)
+            self.publish_connection_status()
 
     def set_reload(self,value):
         # OpenHAB  problems workaroud 
