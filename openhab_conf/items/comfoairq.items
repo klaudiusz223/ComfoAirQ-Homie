@@ -1,23 +1,29 @@
 //Gateway Control
 Switch      EQ_Ventilation_Gateway_Stay_Connected               "Stay connected to Comfoconnect"  (EQ_Ventilation,gRestorePersistence) {channel="mqtt:homie300:local:zehnderq450gateway:controls#stayconnected"}
-//Gateway sensor
+//Gateway sensors
 String      EQ_Ventilation_Gateway_Connection_State             "Connection state"  (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450gateway:sensors#state"}
 Switch      vEQ_Ventilation_Gateway_Reload_Timer                "Reload Homie Devices in 60s" (EQ_Ventilation)  {expire = "60s,command=OFF" }                     
 DateTime    vQ_Ventilation_Gateway_Connection_State_Last_Update "Connection state Last Udate [%1$tF %1$tR]"   (EQ_Ventilation,gRestorePersistence)
 
-// Zehnder controlls
+// Zehnder Sensors
 
 String EQ_Ventilation_Current_Mode      "Current Mode [%s]"     <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#current_2Dmode"}
 
-Number:Temperature      EQ_Ventilation_Supply_Temperature       "Temperature Supply   [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dsupply"   ,expire="1h"}
-Number:Temperature      EQ_Ventilation_Extract_Temperature      "Temperature Extract  [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dextract"  ,expire="1h"}
-Number:Temperature      EQ_Ventilation_Outdoor_Temperature      "Temperature Outdoor  [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Doutdoor"  ,expire="1h"}
-Number:Temperature      EQ_Ventilation_Exhaust_Temperature      "Temperature Exhaust  [%.1f °C]" <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dexhaust"  ,expire="1h"}
+Number:Temperature      EQ_Ventilation_Supply_Temperature       "Temperature Supply   [%.1f °C]" <temperature> (EQ_Ventilation,gEQ_Ventilation_Conditions) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dsupply"   ,expire="1h"}
+Number:Temperature      EQ_Ventilation_Extract_Temperature      "Temperature Extract  [%.1f °C]" <temperature> (EQ_Ventilation,gEQ_Ventilation_Conditions) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dextract"  ,expire="1h"}
+Number:Temperature      EQ_Ventilation_Outdoor_Temperature      "Temperature Outdoor  [%.1f °C]" <temperature> (EQ_Ventilation,gEQ_Ventilation_Conditions) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Doutdoor"  ,expire="1h"}
+Number:Temperature      EQ_Ventilation_Exhaust_Temperature      "Temperature Exhaust  [%.1f °C]" <temperature> (EQ_Ventilation,gEQ_Ventilation_Conditions) {channel="mqtt:homie300:local:zehnderq450:sensors#temperature_2Dexhaust"  ,expire="1h"}
 
-Dimmer      EQ_Ventilation_Supply_Humidity       "Humidity Supply"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dsupply"   ,expire="1h",autoupdate="false"}
-Dimmer      EQ_Ventilation_Extract_Humidity      "Humidity Extract"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dextract"  ,expire="1h",autoupdate="false"}
-Dimmer      EQ_Ventilation_Outdoor_Humidity      "Humidity Outdoor"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Doutdoor"  ,expire="1h",autoupdate="false"}
-Dimmer      EQ_Ventilation_Exhaust_Humidity      "Humidity Exhaust"   <humidity> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dexhaust"  ,expire="1h",autoupdate="false"}
+Dimmer      EQ_Ventilation_Supply_Humidity       "Humidity Supply"    <humidity> (EQ_Ventilation,gEQ_Ventilation_Conditions) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dsupply"   ,expire="1h",autoupdate="false"}
+Dimmer      EQ_Ventilation_Extract_Humidity      "Humidity Extract"   <humidity> (EQ_Ventilation,gEQ_Ventilation_Conditions) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dextract"  ,expire="1h",autoupdate="false"}
+Dimmer      EQ_Ventilation_Outdoor_Humidity      "Humidity Outdoor"   <humidity> (EQ_Ventilation,gEQ_Ventilation_Conditions) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Doutdoor"  ,expire="1h",autoupdate="false"}
+Dimmer      EQ_Ventilation_Exhaust_Humidity      "Humidity Exhaust"   <humidity> (EQ_Ventilation,gEQ_Ventilation_Conditions) {channel="mqtt:homie300:local:zehnderq450:sensors#humidity_2Dexhaust"  ,expire="1h",autoupdate="false"}
+
+Text      vEQ_Ventilation_Supply_Conditions       "Supply [%s]"
+Text      vEQ_Ventilation_Extract_Conditions      "Extract [%s]"
+Text      vEQ_Ventilation_Outdoor_Conditions      "Outdoor [%s]"
+Text      vEQ_Ventilation_Exhaust_Conditions      "Exhaust [%s]"
+
 
 Number:Dimensionless      EQ_Ventilation_Supply_Speed           "Supply Fan Speed [%d rpm]" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dsupply_2Dspeed_2Dlow_2Drate"  ,expire="1h"}
 Number:Dimensionless      EQ_Ventilation_Exhaust_Speed          "Exhaust Fan Speed [%d rpm]" <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:sensors#fan_2Dexhaust_2Dspeed_2Dlow_2Drate"  ,expire="1h"}
@@ -74,10 +80,12 @@ Switch EQ_Ventilation_Manual_Mode           "Manual Mode"              <switch> 
 String EQ_Ventilation_Fan_Mode              "Fan Mode"                 <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#fan_2Dmode"}
 String EQ_Ventilation_Bypass_Mode           "Bypass Mode"              <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#bypass_2Dmode"}
 String EQ_Ventilation_Balance_Mode          "Ventilation Mode"         <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#vent_2Dmode"}
-String EQ_Ventilation_Temperature_Profile   "Temperature Profile"      <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#temperature_2Dprofile"}
+String gEQ_Ventilation_Conditions_Profile   "Temperature Profile"      <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#temperature_2Dprofile"}
 
 String EQ_Ventilation_Testing_Scripts        "Testing Scripts"         <settings>    (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#testing"}
 
 
 Number:Dimensionless  EQ_Ventilation_Activate_Boost  "Activate Boost [%d]" <flow>     (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#boost_2Dmode"}
 Number:Dimensionless  EQ_Ventilation_Activate_Away   "Activate Away  [%d]" <suitcase> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#away_2Dmode"}
+
+
