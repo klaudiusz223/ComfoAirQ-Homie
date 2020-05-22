@@ -21,11 +21,10 @@ setuptools.setup(
     install_requires=[
         'Homie4>=0.3.2',
         'pyyaml',
-        # 'pycomfoconnect',
+        'pycomfoconnect @ git+https://github.com/michaelarnauts/comfoconnect.git@97093b8b50710107c96eb101f2db83ae0f2ddfaf',
     ],
-    dependency_links=[
-        # 'git+https://github.com/michaelarnauts/comfoconnect.git'
-    ],
+    # dependency_links=[
+    # ],
     entry_points={
         'console_scripts': [
             'comfoairq-homie = comfoairq_homie.__main__:main'
