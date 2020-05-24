@@ -1,6 +1,7 @@
 import time
 import logging
 
+from datetime import datetime
 from pycomfoconnect import *
 
 logger = logging.getLogger(__name__)
@@ -123,6 +124,9 @@ class ComfoAirQ(object):
                         try:
                             logger.debug("Trying to connect")
                             self.comfoconnect.connect(True)
+                            logger.info("Comfoconnect version {}".format(self.comfoconnect.cmd_version_request()))
+                            utc_time = self.comfoconnect.cmd_time_request() + 946684800
+                            logger.info("Comfoconnect UTC time: {}".format(datetime.utcfromtimestamp(utc_time).strftime('%Y-%m-%d %H:%M:%S')))
                         except (Exception) as ex:
                             logger.warning("Connection failed")
                             logger.warning(ex)

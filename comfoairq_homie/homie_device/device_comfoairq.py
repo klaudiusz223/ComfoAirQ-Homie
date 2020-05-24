@@ -301,8 +301,11 @@ class Device_ComfoAirQ(Device_Base):
         # self.comfoairq.register_sensor(SENSOR_BYPASS_MODE)
         # self.comfoairq.register_sensor(210)
         # self.comfoairq.register_sensor(209)
-        # self.comfoairq.register_sensor(211)
         # SETTING_HEATING_SEASON = 210
+        self.comfoairq.register_sensor(83,3)
+        self.comfoairq.register_sensor(84,3)
+        self.comfoairq.register_sensor(85,3)
+        self.comfoairq.register_sensor(88,3)
 #end additionals
 
         self.start()
@@ -453,8 +456,8 @@ class Device_ComfoAirQ(Device_Base):
 
     def callback_sensor(self,var, value):
     ## Callback sensors ################################################################################################
-        # if var in [210,209,211]:
-        #     logger.info("Sensor: {}  Value: {}".format(var,value))
+        if var in [83,84,85,88]:
+            logger.info("Sensor: {}  Value: {}".format(var,value))
         if var in self.sensors:
             for homie_sensor in self.sensors.get(var):
                 sensor_id ,sensor_name ,sensor_type , transformation_function, function_args  =  homie_sensor
