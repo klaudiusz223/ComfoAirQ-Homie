@@ -9,6 +9,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 
 from .comfoairq_homie import ComfoAirQ_Homie
+from . import __version__
 
 def handle_exit(sig, frame):
     raise(SystemExit)
@@ -49,6 +50,7 @@ def main():
         cfg = yaml.full_load(ymlfile)
 
     try:
+        logger.info('Starting ComfoAirQ-Homie version {}'.format(__version__))
         logger.info('Waiting... Stop with CTRL+C')
 
         caqh = ComfoAirQ_Homie( 
