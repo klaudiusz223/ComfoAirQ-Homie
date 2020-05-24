@@ -2,7 +2,7 @@
 Switch      EQ_Ventilation_Gateway_Stay_Connected               "Stay connected to Comfoconnect"  (EQ_Ventilation,gRestorePersistence) {channel="mqtt:homie300:local:zehnderq450gateway:controls#stayconnected",autoupdate="false" }
 //Gateway sensors
 String      EQ_Ventilation_Gateway_Connection_State             "Connection state"  (EQ_Ventilation,gEQ_Ventilation_State) {channel="mqtt:homie300:local:zehnderq450gateway:sensors#state"}
-Switch      vEQ_Ventilation_Gateway_Reload_Timer                "Reload Homie Devices in 60s" (EQ_Ventilation)  {expire = "60s,command=OFF" }                     
+Switch      vEQ_Ventilation_Gateway_Reload_Timer                "Reload Homie Devices in 60s" (EQ_Ventilation)  {expire = "60s,command=OFF" }
 DateTime    vQ_Ventilation_Gateway_Connection_State_Last_Update "Connection state Last Udate [%1$tF %1$tR]"   (EQ_Ventilation,gRestorePersistence)
 
 // Zehnder Sensors
@@ -40,7 +40,7 @@ Number:Time               EQ_Ventilation_Filter_Replace_Remaining_Time        "F
 Dimmer                    EQ_Ventilation_Bypass_State           "Bypass State"                      <humidity>  (EQ_Ventilation,gEQ_Ventilation_State,gChartPersistence) {channel="mqtt:homie300:local:zehnderq450:sensors#bypass_2Dstate"  ,expire="1h",autoupdate="false"}
 
 
-DateTime    EQ_Ventilation_Operation_Mode_End_Date              "Operation Mode Mode Change Date [%1$tF %1$tR]"     <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date) 
+DateTime    EQ_Ventilation_Operation_Mode_End_Date              "Operation Mode Mode Change Date [%1$tF %1$tR]"     <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date)
 DateTime    EQ_Ventilation_Supply_Fan_Start_Date                "Supply Fan Start Date [%1$tF %1$tR]"               <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date)
 DateTime    EQ_Ventilation_Exhaust_Fan_Start_Date               "Exhaust Fan Start Date [%1$tF %1$tR]"              <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date)
 DateTime    EQ_Ventilation_Bypass_Manual_Mode_End_Date          "Bypass Manual Mode End Date [%1$tF %1$tR]"         <time> (EQ_Ventilation,gEQ_Ventilation_Mode_End_Date)
@@ -86,6 +86,8 @@ Number:Dimensionless EQ_Ventilation_Bypass_On             "Bypass On [%d]"      
 Number:Dimensionless EQ_Ventilation_Bypass_Off            "Bypass Off [%d]"      <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#bypass_2Doff"}
 
 String EQ_Ventilation_Balance_Mode          "Ventilation Mode"         <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#vent_2Dmode"}
+Number:Dimensionless EQ_Ventilation_Supply_Fan_Off            "Supply Fan Off [%d]"      <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#supply_2Dfan_2Doff"}
+Number:Dimensionless EQ_Ventilation_Exhaust_Fan_Off           "Exhaust Fan Off [%d]"     <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#exhaust_2Dfan_2Doff"}
 
 String EQ_Ventilation_Temperature_Profile   "Temperature Profile"      <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#temperature_2Dprofile"}
 Number:Dimensionless  EQ_Ventilation_Activate_Boost  "Activate Boost [%d]" <flow>     (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#boost_2Dmode"}

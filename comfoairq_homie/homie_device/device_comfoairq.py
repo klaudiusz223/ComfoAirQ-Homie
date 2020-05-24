@@ -278,6 +278,14 @@ class Device_ComfoAirQ(Device_Base):
         self.add_controls_callback(SENSOR_TEMPORARY_STOP_EXHAUST_FAN_STATE,self.update_vent_mode)
         self.add_controls_callback(SENSOR_TEMPORARY_STOP_SUPPLY_FAN_STATE,self.update_vent_mode)
 
+# SUPPLY FAN OFF 
+        node.add_property(Property_Integer (node,id='supply-fan-off', name='Supply Fan Off',data_format='0:'+ str(0xffffffff),set_value = lambda value: self.set_supply_fan_off(value)))
+        self.add_controls_callback(SENSOR_SUPPLY_FAN_TIMER,self.update_supply_fan_off)
+
+# EXHAUST FAN  OFF
+        node.add_property(Property_Integer (node,id='exhaust-fan-off', name='Exhaust Fan Off',data_format='0:'+ str(0xffffffff),set_value = lambda value: self.set_exhaust_fan_off(value)))
+        self.add_controls_callback(SENSOR_EXHAUST_FAN_TIMER,self.update_exhaust_fan_off)
+
 # BOOST MODE
         node.add_property(Property_Integer (node,id='boost-mode',name='Activate Scheduled Boost Mode',data_format='0:'+ str(0xffffffff),set_value = lambda value: self.set_boost_mode(value)))
         self.add_controls_callback(SENSOR_OPERATING_MODE_BIS,self.update_boost_mode)
@@ -308,7 +316,6 @@ class Device_ComfoAirQ(Device_Base):
 
     def disconnect(self):
         self.comfoairq.disconnect()
-
 
     def set_fan_mode(self,value):
         # print ("Fan mode: %s" % (value))
@@ -370,6 +377,18 @@ class Device_ComfoAirQ(Device_Base):
         if self.exhaust_fan_stopped == 1 and self.supply_fan_stopped == 1:
             self.get_node('controls').get_property('vent-mode').value  = list(VENT_MODES.keys())[3] # extract only
 
+
+    def set_supply_fan_off(self,value):
+        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x07\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
+
+    def set_exhaust_fan_off(self,value):
+        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x06\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
+
+    def update_supply_fan_off(self,var,value):
+        self.get_node('controls').get_property('supply-fan-off').value = calculate_timer(None,value,None)
+    
+    def update_exhaust_fan_off(self,var,value):
+        self.get_node('controls').get_property('exhaust-fan-off').value = calculate_timer(None,value,None)
 
     def set_bypass_on(self,value):
         self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x02\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
