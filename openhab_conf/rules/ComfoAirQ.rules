@@ -1,5 +1,8 @@
 import org.eclipse.smarthome.model.script.ScriptServiceUtil;
 
+var boolean reloadOnce = true
+
+
 rule "gEQ_Ventilation_Mode_End_Date_String update end date"
 when
     Member of gEQ_Ventilation_Mode_End_Date_String changed
@@ -44,8 +47,12 @@ rule "Set Reload Homie Devices on System start"
 when
     System started
 then
-    logInfo("homie_rules", "Set reload Homie Devices on system Start")
-    // vEQ_Ventilation_Gateway_Reload_Timer.sendCommand(ON)
+    if(reloadOnce)       
+    {
+        logInfo("homie_rules", "Set reload Homie Devices on system Start")
+        vEQ_Ventilation_Gateway_Reload_Timer.sendCommand(ON)
+    }
+    reloadOnce = false
 end
 
 
@@ -189,10 +196,6 @@ then
     if (EQ_Ventilation_Exhaust_Fan_Start_Time.state != UNDEF) {
         exhaustFanStartTime = (EQ_Ventilation_Exhaust_Fan_Start_Time.state as Number).intValue
     }
-
-
-    logInfo("VENT", "Supply  time {}", supplyFanStartTime )
-    logInfo("VENT", "Exhaust time {}", exhaustFanStartTime )
 
     if (supplyFanStartTime > 0  && exhaustFanStartTime > 0 ) {
         if (supplyFanStartTime <= exhaustFanStartTime){
