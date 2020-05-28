@@ -144,6 +144,7 @@ class ComfoAirQ(object):
                             logger.warning("Disconnection request")
                             self._disconnection = True                
                             continue
+                        self.run_on_state_change_callbacks()
                 # self.comfoconnect_bridge is not None    
                 else:
                     logger.debug("comfoconnect.is_connected is : {}".format(self.comfoconnect.is_connected()))
@@ -185,3 +186,19 @@ class ComfoAirQ(object):
                 callback()
             except Exception as e:
                 pass
+    
+    def cmd_rmi_request(self, message, node_id: int = 1, use_queue: bool = True):
+        """Sends a RMI request."""
+
+        if ( self.comfoconnect is not None and self.comfoconnect.is_connected()):
+            reply = self.comfoconnect._command(
+                CnRmiRequest,
+                {
+                    'nodeId': node_id or 1,
+                    'message': message
+                },
+                use_queue=use_queue
+            )
+            return reply
+        else:
+            return None

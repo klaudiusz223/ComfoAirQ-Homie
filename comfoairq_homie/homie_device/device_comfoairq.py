@@ -296,17 +296,15 @@ class Device_ComfoAirQ(Device_Base):
         self.add_controls_callback(SENSOR_OPERATING_MODE_BIS,self.update_away_mode)
         self.add_controls_callback(SENSOR_FAN_NEXT_CHANGE,self.update_away_mode)
 
-# additional for testing purposes
-        # self.comfoairq.register_sensor(SENSOR_TEMPERATURE_PROFILE)
-        # self.comfoairq.register_sensor(SENSOR_BYPASS_MODE)
-        # self.comfoairq.register_sensor(210)
-        # self.comfoairq.register_sensor(209)
-        # SETTING_HEATING_SEASON = 210
-        self.comfoairq.register_sensor(83,3)
-        self.comfoairq.register_sensor(84,3)
-        self.comfoairq.register_sensor(85,3)
-        self.comfoairq.register_sensor(88,3)
-#end additionals
+# Heating Season detection RMOT
+        node.add_property(Property_Temperature (node,id='heating-rmot',name='Heating Limit RMOT',data_format='0:20',unit='°C',settable = True, set_value = lambda value: self.set_heating_rmot(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_heating_rmot)
+        repeating_timer.add_callback(self.update_heating_rmot)
+
+# Cooling Season detection RMOT
+        node.add_property(Property_Temperature (node,id='cooling-rmot',name='Cooling Limit RMOT',data_format='20:40',unit='°C',settable = True, set_value = lambda value: self.set_cooling_rmot(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_cooling_rmot)
+        repeating_timer.add_callback(self.update_cooling_rmot)
 
         self.start()
         self.publish_connection_status()
@@ -322,20 +320,20 @@ class Device_ComfoAirQ(Device_Base):
 
     def set_fan_mode(self,value):
         # print ("Fan mode: %s" % (value))
-        self.comfoairq.comfoconnect.cmd_rmi_request(FAN_MODES.get(value))
+        self.comfoairq.cmd_rmi_request(FAN_MODES.get(value))
 
     def update_fan_mode(self,var,value):
         # print("Recieved value %s Fan mode updated to %s " % (value,list(FAN_MODES.keys())[value]))
         self.get_node('controls').get_property('fan-mode').value  = list(FAN_MODES.keys())[value]
 
     def set_bypass_mode(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(BYPASS_MODES.get(value))
+        self.comfoairq.cmd_rmi_request(BYPASS_MODES.get(value))
 
     def update_bypass_mode(self,var,value):
         self.get_node('controls').get_property('bypass-mode').value  = list(BYPASS_MODES.keys())[value]
 
     def set_temperature_profile(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(TEMPERATURE_PROFILES.get(value))
+        self.comfoairq.cmd_rmi_request(TEMPERATURE_PROFILES.get(value))
 
     def update_temperature_profile(self,var,value):
         self.get_node('controls').get_property('temperature-profile').value  = list(TEMPERATURE_PROFILES.keys())[value]
@@ -343,7 +341,7 @@ class Device_ComfoAirQ(Device_Base):
 
     def set_operating_mode(self,value):
         for command in OPERATING_MODES.get(value):
-            self.comfoairq.comfoconnect.cmd_rmi_request(command)
+            self.comfoairq.cmd_rmi_request(command)
 
     def update_operating_mode(self,var,value):
         # if var == SENSOR_OPERATING_MODE:
@@ -351,7 +349,7 @@ class Device_ComfoAirQ(Device_Base):
 
     def set_manual_mode(self,value):
         logger.info("Setting manual mode: %s" % (value))
-        self.comfoairq.comfoconnect.cmd_rmi_request(MANUAL_MODE.get(value))
+        self.comfoairq.cmd_rmi_request(MANUAL_MODE.get(value))
 
     def update_manual_mode(self,var,value):
         # if var == SENSOR_OPERATING_MODE:
@@ -363,7 +361,7 @@ class Device_ComfoAirQ(Device_Base):
     def set_vent_mode(self,value):
         # logger.info("vent mode to set : {} with command: {} ".format(value,VENT_MODES.get(value)))
         for command in VENT_MODES.get(value):
-            self.comfoairq.comfoconnect.cmd_rmi_request(command)
+            self.comfoairq.cmd_rmi_request(command)
 
     def update_vent_mode(self,var,value):
         if var == SENSOR_TEMPORARY_STOP_SUPPLY_FAN_STATE:
@@ -382,10 +380,10 @@ class Device_ComfoAirQ(Device_Base):
 
 
     def set_supply_fan_off(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x07\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
+        self.comfoairq.cmd_rmi_request(b'\x84\x15\x07\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
 
     def set_exhaust_fan_off(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x06\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
+        self.comfoairq.cmd_rmi_request(b'\x84\x15\x06\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
 
     def update_supply_fan_off(self,var,value):
         self.get_node('controls').get_property('supply-fan-off').value = calculate_timer(None,value,None)
@@ -394,10 +392,10 @@ class Device_ComfoAirQ(Device_Base):
         self.get_node('controls').get_property('exhaust-fan-off').value = calculate_timer(None,value,None)
 
     def set_bypass_on(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x02\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
+        self.comfoairq.cmd_rmi_request(b'\x84\x15\x02\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x01')
 
     def set_bypass_off(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x02\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x02')
+        self.comfoairq.cmd_rmi_request(b'\x84\x15\x02\x01\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x02')
 
     def update_bypass(self,var,value):        
         if self.get_node('controls').get_property('bypass-mode').value == list(BYPASS_MODES.keys())[1]: #bypass on
@@ -411,7 +409,7 @@ class Device_ComfoAirQ(Device_Base):
             self.get_node('controls').get_property('bypass-off').value = 0
 
     def set_boost_mode(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x01\x06\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x03')
+        self.comfoairq.cmd_rmi_request(b'\x84\x15\x01\x06\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x03')
 
     def update_boost_mode(self,var,value):
         if self.get_node('sensors').get_property('current-mode').value == CURRENT_MODE_SENSOR_VALUES[3]: #boost
@@ -420,7 +418,7 @@ class Device_ComfoAirQ(Device_Base):
             self.get_node('controls').get_property('boost-mode').value = 0
 
     def set_away_mode(self,value):
-        self.comfoairq.comfoconnect.cmd_rmi_request(b'\x84\x15\x01\x0b\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x00')                                                      
+        self.comfoairq.cmd_rmi_request(b'\x84\x15\x01\x0b\x00\x00\x00\x00' + struct.pack('<i',value) + b'\x00')                                                      
 
     def update_away_mode(self,var,value):
         if self.get_node('sensors').get_property('current-mode').value == CURRENT_MODE_SENSOR_VALUES[4]:
@@ -446,7 +444,31 @@ class Device_ComfoAirQ(Device_Base):
                 self.get_node('sensors').get_property('current-mode').value  = CURRENT_MODE_SENSOR_VALUES[4] # scheduled away
         elif  self.operating_mode_bis in [1,5] and  self.operating_mode == 1:
                 self.get_node('sensors').get_property('current-mode').value  = CURRENT_MODE_SENSOR_VALUES[2] # temporary manual
-        
+
+    def set_heating_rmot(self,value):
+        val = int(10 * value)
+        self.comfoairq.cmd_rmi_request(b'\x03\x1d\x01\x02' + struct.pack('h',val))
+        time.sleep(1)
+        self.update_heating_rmot()
+
+    def update_heating_rmot(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1d\x01\x10\x02')
+        if reply_message is not None:
+            val = struct.unpack('h', reply_message.msg.message)[0]
+            self.get_node('controls').get_property('heating-rmot').value = round(val * 0.1,1)
+
+    def set_cooling_rmot(self,value):
+        val = int(10 * value)
+        self.comfoairq.cmd_rmi_request(b'\x03\x1d\x01\x03' + struct.pack('h',val))
+        time.sleep(1)
+        self.update_heating_rmot()
+
+    def update_cooling_rmot(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1d\x01\x10\x03')
+        if reply_message is not None:
+            val = struct.unpack('h', reply_message.msg.message)[0]
+            self.get_node('controls').get_property('cooling-rmot').value = round(val * 0.1,1)
+    
     def add_controls_callback(self,sensor,callback):
         self.comfoairq.register_sensor(sensor)
         if sensor not in self.comfoairq_controls:
@@ -456,8 +478,6 @@ class Device_ComfoAirQ(Device_Base):
 
     def callback_sensor(self,var, value):
     ## Callback sensors ################################################################################################
-        if var in [83,84,85,88]:
-            logger.info("Sensor: {}  Value: {}".format(var,value))
         if var in self.sensors:
             for homie_sensor in self.sensors.get(var):
                 sensor_id ,sensor_name ,sensor_type , transformation_function, function_args  =  homie_sensor
