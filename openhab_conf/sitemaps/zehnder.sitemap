@@ -127,6 +127,15 @@ sitemap zehnder label="Zehnder"
                                             Frame label="Season Detection" {
                                                 Text item=EQ_Ventilation_Heating_Season 
                                                 Text item=EQ_Ventilation_Current_RMOT
+                                                Setpoint  item=EQ_Ventilation_Heating_Limit_RMOT minValue=0 maxValue=20 step=0.5
+                                                Setpoint  item=EQ_Ventilation_Cooling_Limit_RMOT minValue=20 maxValue=40 step=0.5
+
+                                            } 
+
+                                            Frame label="Sensor Ventilation" {
+                                                Switch item=EQ_Ventilation_Temperature_Passive      label="Temperature Passive []" mappings=[on="On",'auto only'="Auto only",off="Off"]
+                                                Switch item=EQ_Ventilation_Humidity_Comfort         label="Humidity Comfort []" mappings=[on="On",'auto only'="Auto only",off="Off"]
+                                                Switch item=EQ_Ventilation_Humidity_Protection      label="Humidity Protection []" mappings=[on="On",'auto only'="Auto only",off="Off"]
                                             } 
 
                                             Frame label="Other" {

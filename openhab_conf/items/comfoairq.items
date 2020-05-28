@@ -93,6 +93,9 @@ String EQ_Ventilation_Temperature_Profile   "Temperature Profile"      <temperat
 Number:Dimensionless  EQ_Ventilation_Activate_Boost  "Activate Boost [%d]" <flow>     (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#boost_2Dmode"}
 Number:Dimensionless  EQ_Ventilation_Activate_Away   "Activate Away  [%d]" <suitcase> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#away_2Dmode"}
 
-// String EQ_Ventilation_Testing_Scripts        "Testing Scripts"         <settings>    (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#testing"}
+Number:Temperature  EQ_Ventilation_Heating_Limit_RMOT   "Heating Limit RMOT [%.1f °C]"       <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#heating_2Drmot" }
+Number:Temperature  EQ_Ventilation_Cooling_Limit_RMOT   "Cooling Limit RMOT [%.1f °C]"       <temperature> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#cooling_2Drmot" }
 
-
+String EQ_Ventilation_Temperature_Passive        "Temperature Passive"           <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#temperature_2Dpassive", autoupdate="false"}
+String EQ_Ventilation_Humidity_Comfort           "Humidity Comfort"              <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#humidity_2Dcomfort", autoupdate="false"}
+String EQ_Ventilation_Humidity_Protection        "Humidity Protection"           <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#humidity_2Dprotection", autoupdate="false"}
