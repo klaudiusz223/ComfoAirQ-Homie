@@ -115,7 +115,7 @@ comfoairq_sensors = {
     SENSOR_FAN_EXHAUST_FLOW     : [("fan-exhaust-flow"     ,"Exhaust Fan Flow" ,"fan_flow"  , None ,(),),
                                    ("fan-exhaust-flow-low-rate"     ,"Exhaust Fan Flow" ,"fan_flow"  , slow_down ,('fan-exhaust-flow-low-rate',200,0.015,),),],
     SENSOR_FAN_SUPPLY_FLOW      : [("fan-supply-flow"      ,"Supply Fan Flow"  ,"fan_flow"  , None ,(),),
-                                   ("fan-supply-flow-low-rate"      ,"Supply Fan Flow"  ,"fan_flow"  , slow_down ,('fan-exhaust-flow-low-rate',200,0.015,),),],
+                                   ("fan-supply-flow-low-rate"      ,"Supply Fan Flow"  ,"fan_flow"  , slow_down ,('fan-supply-flow-low-rate',200,0.015,),),],
     SENSOR_FAN_EXHAUST_SPEED    : [("fan-exhaust-speed"    ,"Exhaust Fan Speed","fan_speed" , None ,(),),
                                    ("fan-exhaust-speed-low-rate" ,"Exhaust Fan Speed","fan_speed" , slow_down ,('fan-exhaust-speed-low-rate',200,0.015,),),],
     SENSOR_FAN_SUPPLY_SPEED     : [("fan-supply-speed"     ,"Supply Fan Speed" ,"fan_speed" , None ,(),),
