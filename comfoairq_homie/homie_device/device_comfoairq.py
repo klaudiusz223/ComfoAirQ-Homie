@@ -95,6 +95,12 @@ OPERATING_MODES_SENSOR_VALUES = {
      1  :       'manual',
 }
 
+SENSOR_VENTILATION = [
+    'off',
+    'auto only',
+    'on',
+]
+
 comfoairq_sensors = {
 #   comfoconnect sensor         : [(    sensor_id         ,     sensor_type        ,     transformation_function, z9function_args)), ]
     SENSOR_TEMPERATURE_OUTDOOR  : [("temperature-outdoor",    "Temperature Outdoor",  "temperature" , multiply , (0.1,1,), ),],
@@ -306,6 +312,21 @@ class Device_ComfoAirQ(Device_Base):
         self.comfoairq.add_on_state_change_callback(self.update_cooling_rmot)
         repeating_timer.add_callback(self.update_cooling_rmot)
 
+#Temperature  passive
+        node.add_property(Property_Enum (node,id='temperature-passive',name='Temperature Passive',data_format=','.join(SENSOR_VENTILATION),set_value = lambda value: self.set_temperature_passive(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_temperature_passive)
+        repeating_timer.add_callback(self.update_temperature_passive)
+
+#Humidity comfort
+        node.add_property(Property_Enum (node,id='humidity-comfort',name='Humidity Comfort',data_format=','.join(SENSOR_VENTILATION),set_value = lambda value: self.set_humidity_comfort(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_humidity_comfort)
+        repeating_timer.add_callback(self.update_humidity_comfort)
+
+#Humidity protection
+        node.add_property(Property_Enum (node,id='humidity-protection',name='Humidity Protection',data_format=','.join(SENSOR_VENTILATION),set_value = lambda value: self.set_humidity_protection(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_humidity_protection)
+        repeating_timer.add_callback(self.update_humidity_protection)
+
         self.start()
         self.publish_connection_status()
 
@@ -323,7 +344,6 @@ class Device_ComfoAirQ(Device_Base):
         self.comfoairq.cmd_rmi_request(FAN_MODES.get(value))
 
     def update_fan_mode(self,var,value):
-        # print("Recieved value %s Fan mode updated to %s " % (value,list(FAN_MODES.keys())[value]))
         self.get_node('controls').get_property('fan-mode').value  = list(FAN_MODES.keys())[value]
 
     def set_bypass_mode(self,value):
@@ -469,6 +489,39 @@ class Device_ComfoAirQ(Device_Base):
             val = struct.unpack('h', reply_message.msg.message)[0]
             self.get_node('controls').get_property('cooling-rmot').value = round(val * 0.1,1)
     
+    def set_temperature_passive(self,value):
+        self.comfoairq.cmd_rmi_request(b'\x03\x1d\x01\x04' + struct.pack('B',SENSOR_VENTILATION.index(value)))
+        time.sleep(1)
+        self.update_temperature_passive()
+
+    def update_temperature_passive(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1d\x01\x10\x04')
+        if reply_message is not None:
+            val = struct.unpack('B', reply_message.msg.message)[0]
+            self.get_node('controls').get_property('temperature-passive').value = SENSOR_VENTILATION[val]
+
+    def set_humidity_comfort(self,value):
+        self.comfoairq.cmd_rmi_request(b'\x03\x1d\x01\x06' + struct.pack('B',SENSOR_VENTILATION.index(value)))
+        time.sleep(1)
+        self.update_temperature_passive()
+
+    def update_humidity_comfort(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1d\x01\x10\x06')
+        if reply_message is not None:
+            val = struct.unpack('B', reply_message.msg.message)[0]
+            self.get_node('controls').get_property('humidity-comfort').value = SENSOR_VENTILATION[val]
+
+    def set_humidity_protection(self,value):
+        self.comfoairq.cmd_rmi_request(b'\x03\x1d\x01\x07' + struct.pack('B',SENSOR_VENTILATION.index(value)))
+        time.sleep(1)
+        self.update_temperature_passive()
+
+    def update_humidity_protection(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1d\x01\x10\x07')
+        if reply_message is not None:
+            val = struct.unpack('B', reply_message.msg.message)[0]
+            self.get_node('controls').get_property('humidity-protection').value = SENSOR_VENTILATION[val]
+
     def add_controls_callback(self,sensor,callback):
         self.comfoairq.register_sensor(sensor)
         if sensor not in self.comfoairq_controls:
