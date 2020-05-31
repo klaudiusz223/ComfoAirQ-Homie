@@ -327,6 +327,10 @@ class Device_ComfoAirQ(Device_Base):
         self.comfoairq.add_on_state_change_callback(self.update_humidity_protection)
         repeating_timer.add_callback(self.update_humidity_protection)
 
+#Flow unbalance
+        node.add_property(Property_Float (node,id='unbalance',name='Flow Unbalance',data_format='-15:15',set_value = lambda value: self.set_unbalance(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_unbalance)
+        repeating_timer.add_callback(self.update_unbalance)
         self.start()
         self.publish_connection_status()
 
@@ -521,6 +525,18 @@ class Device_ComfoAirQ(Device_Base):
         if reply_message is not None:
             val = struct.unpack('B', reply_message.msg.message)[0]
             self.get_node('controls').get_property('humidity-protection').value = SENSOR_VENTILATION[val]
+
+    def set_unbalance(self,value):
+        val = int(10 * value)
+        self.comfoairq.cmd_rmi_request(b'\x03\x1e\x01\x12' + struct.pack('h',val))
+        time.sleep(1)
+        self.update_unbalance()
+
+    def update_unbalance(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1e\x01\x10\x12')
+        if reply_message is not None:
+            val = struct.unpack('h', reply_message.msg.message)[0]
+            self.get_node('controls').get_property('unbalance').value = round(val * 0.1,1)
 
     def add_controls_callback(self,sensor,callback):
         self.comfoairq.register_sensor(sensor)
