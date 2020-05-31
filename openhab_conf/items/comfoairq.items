@@ -99,3 +99,10 @@ Number:Temperature  EQ_Ventilation_Cooling_Limit_RMOT   "Cooling Limit RMOT [%.1
 String EQ_Ventilation_Temperature_Passive        "Temperature Passive"           <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#temperature_2Dpassive", autoupdate="false"}
 String EQ_Ventilation_Humidity_Comfort           "Humidity Comfort"              <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#humidity_2Dcomfort", autoupdate="false"}
 String EQ_Ventilation_Humidity_Protection        "Humidity Protection"           <fan>         (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#humidity_2Dprotection", autoupdate="false"}
+
+Number EQ_Ventilation_Unbalance     "Flow Unbalance [%.1f %%]"          <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#unbalance"       ,autoupdate="false"}
+Number EQ_Ventilation_Flow_Away     "Flow Away Speed [%d m³/h]"         <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#flow_2Daway"     ,autoupdate="false"}
+Number EQ_Ventilation_Flow_Low      "Flow Low Speed [%d m³/h]"          <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#flow_2Dlow"      ,autoupdate="false"}
+Number EQ_Ventilation_Flow_Medium   "Flow Medium Speed [%d m³/h]"       <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#flow_2Dmedium"   ,autoupdate="false"}
+Number EQ_Ventilation_Flow_High     "Flow High Speed [%d m³/h]"         <fan> (EQ_Ventilation) {channel="mqtt:homie300:local:zehnderq450:controls#flow_2Dhigh"     ,autoupdate="false"}
+

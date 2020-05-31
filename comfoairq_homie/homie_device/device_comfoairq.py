@@ -173,11 +173,16 @@ class Device_ComfoAirQ(Device_Base):
     comfoairq = None
     comfoairq_controls = {}
 
+    flow_presets = {}
+
     exhaust_fan_stopped = 0
     supply_fan_stopped = 0
 
     operating_mode_bis = None
     operating_mode = None
+
+    min_low_flow = None
+    max_high_flow = None
 
     def __init__(
                 self, 
@@ -204,6 +209,9 @@ class Device_ComfoAirQ(Device_Base):
 
         self.sensors = sensors_definition
         self.comfoconnect_settings=comfoconnect_settings
+        self.min_low_flow = self.comfoconnect_settings['COMFOCONNECT_MIN_LOW_FLOW']
+
+        self.max_high_flow = self.comfoconnect_settings['COMFOCONNECT_MAX_HIGH_FLOW']
 
         self.comfoairq = ComfoAirQ(comfoconnect_settings=self.comfoconnect_settings)
         self.comfoairq.callback_sensor = self.callback_sensor
@@ -331,6 +339,27 @@ class Device_ComfoAirQ(Device_Base):
         node.add_property(Property_Float (node,id='unbalance',name='Flow Unbalance',data_format='-15:15',set_value = lambda value: self.set_unbalance(value)))
         self.comfoairq.add_on_state_change_callback(self.update_unbalance)
         repeating_timer.add_callback(self.update_unbalance)
+
+#Flow Away
+        node.add_property(Property_Integer (node,id='flow-away',name='Flow Away Speed',data_format='0:' + str(self.max_high_flow),set_value = lambda value: self.set_flow_away(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_flow_away)
+        repeating_timer.add_callback(self.update_flow_away)
+
+#Flow Low
+        node.add_property(Property_Integer (node,id='flow-low',name='Flow Low Speed',data_format= str(self.min_low_flow) + ':' + str(self.max_high_flow),set_value = lambda value: self.set_flow_low(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_flow_low)
+        repeating_timer.add_callback(self.update_flow_low)
+
+#Flow Medium
+        node.add_property(Property_Integer (node,id='flow-medium',name='Flow Medium Speed',data_format=str(self.min_low_flow) + ':' + str(self.max_high_flow),set_value = lambda value: self.set_flow_medium(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_flow_medium)
+        repeating_timer.add_callback(self.update_flow_medium)
+
+#Flow High
+        node.add_property(Property_Integer (node,id='flow-high',name='Flow High Speed',data_format=str(self.min_low_flow) + ':' + str(self.max_high_flow),set_value = lambda value: self.set_flow_high(value)))
+        self.comfoairq.add_on_state_change_callback(self.update_flow_high)
+        repeating_timer.add_callback(self.update_flow_high)
+
         self.start()
         self.publish_connection_status()
 
@@ -537,6 +566,86 @@ class Device_ComfoAirQ(Device_Base):
         if reply_message is not None:
             val = struct.unpack('h', reply_message.msg.message)[0]
             self.get_node('controls').get_property('unbalance').value = round(val * 0.1,1)
+
+    def set_flow_away(self,value):
+        val = int(value)
+        if ( 'low' in self.flow_presets.keys() and value <= self.flow_presets['low']):
+            try:
+                self.comfoairq.cmd_rmi_request(b'\x03\x1e\x01\x03' + struct.pack('h',val))
+            except (Exception) as ex:
+                logger.info(ex)
+        time.sleep(1)
+        self.update_flow_away()
+        self.update_flow_low()
+        self.update_flow_medium()
+        self.update_flow_high()
+
+    def set_flow_low(self,value):
+        val = int(value)
+        if ( 'medium' in self.flow_presets.keys() and value <= self.flow_presets['medium']):
+            try:
+                self.comfoairq.cmd_rmi_request(b'\x03\x1e\x01\x04' + struct.pack('h',val))
+            except (Exception) as ex:
+                logger.info(ex)
+        time.sleep(1)
+        self.update_flow_away()
+        self.update_flow_low()
+        self.update_flow_medium()
+        self.update_flow_high()
+
+    def set_flow_medium(self,value):
+        val = int(value)
+        if ( 'high' in self.flow_presets.keys() and value <= self.flow_presets['high']):
+            try:
+                self.comfoairq.cmd_rmi_request(b'\x03\x1e\x01\x05' + struct.pack('h',val))
+            except (Exception) as ex:
+                logger.info(ex)
+        time.sleep(1)
+        self.update_flow_away()
+        self.update_flow_low()
+        self.update_flow_medium()
+        self.update_flow_high()
+
+    def set_flow_high(self,value):
+        val = int(value)
+        if ( 'medium' in self.flow_presets.keys() and value >= self.flow_presets['medium']):
+            try:
+                self.comfoairq.cmd_rmi_request(b'\x03\x1e\x01\x06' + struct.pack('h',val))
+            except (Exception) as ex:
+                logger.info(ex)
+        time.sleep(1)
+        self.update_flow_away()
+        self.update_flow_low()
+        self.update_flow_medium()
+        self.update_flow_high()
+
+    def update_flow_away(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1e\x01\x10\x03')
+        if reply_message is not None:
+            val = struct.unpack('h', reply_message.msg.message)[0]
+            self.flow_presets['away']=val
+            self.get_node('controls').get_property('flow-away').value = val
+
+    def update_flow_low(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1e\x01\x10\x04')
+        if reply_message is not None:
+            val = struct.unpack('h', reply_message.msg.message)[0]
+            self.flow_presets['low']=val
+            self.get_node('controls').get_property('flow-low').value = val
+
+    def update_flow_medium(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1e\x01\x10\x05')
+        if reply_message is not None:
+            val = struct.unpack('h', reply_message.msg.message)[0]
+            self.flow_presets['medium']=val
+            self.get_node('controls').get_property('flow-medium').value = val
+
+    def update_flow_high(self):
+        reply_message = self.comfoairq.cmd_rmi_request(b'\x01\x1e\x01\x10\x06')
+        if reply_message is not None:
+            val = struct.unpack('h', reply_message.msg.message)[0]
+            self.flow_presets['high']=val
+            self.get_node('controls').get_property('flow-high').value = val
 
     def add_controls_callback(self,sensor,callback):
         self.comfoairq.register_sensor(sensor)

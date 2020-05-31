@@ -45,7 +45,9 @@ comfoconnect:
   COMFOCONNECT_NAME : "ComfoConnect Homie Gateway"
   COMFOCONNECT_UUID : "00000000000000000000000000000006"
   COMFOCONNECT_AUTOCONNECT : True
-
+  COMFOCONNECT_MIN_LOW_FLOW : 90 # MIN AIR FLOW AT LOW SPEED - 90 m3/h for Q450. Check  Installer menu in original App
+  COMFOCONNECT_MAX_HIGH_FLOW : 450  # MAX AIR FLOW for Q450 
+  
 comfoairq_homie:
   HOMIE_ID              : zehnderq450
   HOMIE_NAME            : ZehnderQ450
