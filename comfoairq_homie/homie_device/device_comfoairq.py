@@ -164,6 +164,7 @@ comfoairq_sensors = {
     SENSOR_BYPASS_STATE                   : [("bypass-state"            ,"Bypass state"   ,"percentage" , None ,(),),],
 
     SENSOR_HEATING_SEASON                 : [("heating-season"          ,"Heating Season" ,"enum" , transform_dict ,SEASONS_VALUES,),],
+    SENSOR_COOLING_SEASON                 : [("cooling-season"          ,"Cooling Season" ,"enum" , transform_dict ,SEASONS_VALUES,),],
 }
 
 repeating_timer = None

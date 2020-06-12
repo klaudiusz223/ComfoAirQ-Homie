@@ -22,7 +22,7 @@ sitemap zehnder label="Zehnder"
                                 Text item=EQ_Ventilation_Bypass_Manual_Mode_End_Date label="Bypass manual mode till" visibility=[EQ_Ventilation_Bypass_Manual_Mode_Remaining_Time > 0]
                                 Switch item=EQ_Ventilation_Temperature_Profile label="Temperature profile []" mappings=[normal="Normal",warm="Warm",cool="Cool"]
                                 Switch item=EQ_Ventilation_Balance_Mode label="Ventilation mode []" mappings=[balance="Balance",'supply only'="Supply",'extract only'="Extract", off="Off"]
-                                Text item=EQ_Ventilation_Fan_Mode_End_Date label="Current mode till" visibility=[EQ_Ventilation_Fan_Mode_End_Date != UNDEF]
+                                Text item=EQ_Ventilation_Fan_Mode_End_Date label="Current mode till" visibility=[EQ_Ventilation_Supply_Fan_Start_Time > 0,EQ_Ventilation_Exhaust_Fan_Start_Time > 0]
                             }
 
                             Frame label="Temperature" {
@@ -126,6 +126,7 @@ sitemap zehnder label="Zehnder"
 
                                             Frame label="Season Detection" {
                                                 Text item=EQ_Ventilation_Heating_Season 
+                                                Text item=EQ_Ventilation_Cooling_Season 
                                                 Text item=EQ_Ventilation_Current_RMOT
                                                 Setpoint  item=EQ_Ventilation_Heating_Limit_RMOT minValue=0 maxValue=20 step=0.5
                                                 Setpoint  item=EQ_Ventilation_Cooling_Limit_RMOT minValue=20 maxValue=40 step=0.5
