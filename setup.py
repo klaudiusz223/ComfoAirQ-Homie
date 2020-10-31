@@ -21,7 +21,7 @@ setuptools.setup(
     install_requires=[
         'Homie4>=0.3.2',
         'pyyaml',
-        'pycomfoconnect @ git+https://github.com/michaelarnauts/comfoconnect.git@97093b8b50710107c96eb101f2db83ae0f2ddfaf',
+        'pycomfoconnect>=0.4' ,
     ],
     # dependency_links=[
     # ],
