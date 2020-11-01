@@ -14,16 +14,13 @@ MQTT broker - Tested with mosquitto https://mosquitto.org/
 <br/>
 Python  Wheels
 
-pycomfoconnect library from master branch. Version from PyPI repository is too old.
+pycomfoconnect = 0.4.
 <br/>
-Tested with
-https://github.com/michaelarnauts/comfoconnect.git#97093b8b50710107c96eb101f2db83ae0f2ddfaf
-
 
 
 ```
 pip3 install wheel
-pip3 install --upgrade git+https://github.com/michaelarnauts/comfoconnect.git@97093b8b50710107c96eb101f2db83ae0f2ddfaf'
+
 pip3 install git+https://github.com/klaudiusz223/ComfoAirQ-Homie.git
 ```
 
