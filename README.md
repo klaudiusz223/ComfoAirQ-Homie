@@ -21,7 +21,7 @@ pycomfoconnect = 0.4.
 ```
 pip3 install wheel
 
-pip3 install git+https://github.com/klaudiusz223/ComfoAirQ-Homie.git
+pip3 install comfoairq-homie
 ```
 
 Create configuration in comfoairq_homie.yml file. ComfoAirQ-Homie searches this file in directory from which is started or it is possible to specify it by command line option "-c filename.yml". 
