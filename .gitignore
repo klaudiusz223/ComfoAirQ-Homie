@@ -4,3 +4,5 @@ comfoairq_homie/homie_device/__pycache__/*
 comfoairq_homie/comfoairq/__pycache__/*
 .vscode/
 comfoairq_homie.egg-info/
+dist/*
+build/*
