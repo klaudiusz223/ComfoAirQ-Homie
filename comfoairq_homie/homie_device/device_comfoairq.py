@@ -317,7 +317,7 @@ class Device_ComfoAirQ(Device_Base):
         repeating_timer.add_callback(self.update_heating_rmot)
 
 # Cooling Season detection RMOT
-        node.add_property(Property_Temperature (node,id='cooling-rmot',name='Cooling Limit RMOT',data_format='20:40',unit='°C',settable = True, set_value = lambda value: self.set_cooling_rmot(value)))
+        node.add_property(Property_Temperature (node,id='cooling-rmot',name='Cooling Limit RMOT',data_format='15:40',unit='°C',settable = True, set_value = lambda value: self.set_cooling_rmot(value)))
         self.comfoairq.add_on_state_change_callback(self.update_cooling_rmot)
         repeating_timer.add_callback(self.update_cooling_rmot)
 
