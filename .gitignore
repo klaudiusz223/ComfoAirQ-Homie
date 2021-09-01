@@ -6,3 +6,4 @@ comfoairq_homie/comfoairq/__pycache__/*
 comfoairq_homie.egg-info/
 dist/*
 build/*
+.venv/
