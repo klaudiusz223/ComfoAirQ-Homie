@@ -399,7 +399,8 @@ class Device_ComfoAirQ(Device_Base):
 
     def update_operating_mode(self,var,value):
         # if var == SENSOR_OPERATING_MODE:
-        self.get_node('controls').get_property('operating-mode').value  = OPERATING_MODES_SENSOR_VALUES[value]
+        if value in OPERATING_MODES_SENSOR_VALUES.keys():
+            self.get_node('controls').get_property('operating-mode').value  = OPERATING_MODES_SENSOR_VALUES[value]
 
     def set_manual_mode(self,value):
         logger.info("Setting manual mode: %s" % (value))
