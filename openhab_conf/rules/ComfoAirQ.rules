@@ -1,5 +1,5 @@
 import org.eclipse.smarthome.model.script.ScriptServiceUtil;
-
+// For OH3 Replace by import org.openhab.core.model.script.ScriptServiceUtil
 var boolean reloadOnce = true
 
 
@@ -16,9 +16,8 @@ then
     if ( originalSensor.state != UNDEF ) 
     {
 
-        val DateTimeType modeChangeDate = DateTimeType.valueOf(originalSensor.state.toString) 
-
-        if(now.isBefore(modeChangeDate.zonedDateTime.toInstant.toEpochMilli))
+        val DateTimeType modeChangeDate = DateTimeType.valueOf(originalSensor.state.toString) //Does not work in OH3
+        if(now.isBefore(modeChangeDate.zonedDateTime.toInstant.toEpochMilli)) //Does not work in OH3
         {
             sensor.postUpdate(modeChangeDate)
         } else 
@@ -67,6 +66,7 @@ rule "Check and Reload ComfoAirQ Homie"
 when
     Time cron "0 0/5 * * * ?"
 then
+//OH3 Replace with   if ( now.minusMinutes(3).isAfter((vQ_Ventilation_Gateway_Connection_State_Last_Update.state as DateTimeType).getZonedDateTime()))
     if ( now.minusMinutes(3).isAfter((vQ_Ventilation_Gateway_Connection_State_Last_Update.state as DateTimeType).calendar.timeInMillis))
     {
         // vEQ_Ventilation_Gateway_Reload_Timer.sendCommand(ON)
